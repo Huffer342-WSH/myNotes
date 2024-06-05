@@ -60,11 +60,11 @@ $$
 依次得到发射信号的相位及其波形如下(只关注chrip的波形，忽略 $T_{idle}$ 中的部分 )：
 
 $$
-Ph_{t}(t) = f_{c} t + \frac{B}{2 T_{chrip}}t^{2}
+Ph_{t}(t) =2\pi( f_{c} t + \frac{B}{2 T_{chrip}}t^{2})
 $$
 
 $$
-S_{t}(t) = e^{-j(f_{c} t + \frac{B}{2 T_{chrip}}t^{2})}
+S_{t}(t) = e^{-j2\pi(f_{c} t + \frac{B}{2 T_{chrip}}t^{2})}
 $$
 
 根据以上内容编写一个计算发射信号相位的函数如下：

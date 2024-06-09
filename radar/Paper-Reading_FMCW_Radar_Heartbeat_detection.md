@@ -1,21 +1,40 @@
 ---
 layout: post
-title: 论文阅读 《基于单通道 ISM 频段 FMCW 雷达的非接触式心脏活动检测》
+title: 论文阅读——初步学习基于雷达的生命体征监测（呼吸、心跳检测）
 date: 2024-06-04 16:29:00
 excerpt_type: html
 categories: [信号处理算法]
 ---
 
-论文地址：[《Noncontact Cardiac Activity Detection Based on Single-Channel ISM Band FMCW Radar》](https://doi.org/10.3390/bios13110982)，这篇论文是根据知识共享署名 (CC BY) 许可证的条款和条件分发的，这里所以这里还拷贝了一份 
-[点击跳转](https://cdn.jsdelivr.net/gh/Huffer342-WSH/myNotes/radar/paper/%E5%9F%BA%E4%BA%8E%E5%8D%95%E9%80%9A%E9%81%93%20ISM%20%E9%A2%91%E6%AE%B5%20FMCW%20%E9%9B%B7%E8%BE%BE%E7%9A%84%E9%9D%9E%E6%8E%A5%E8%A7%A6%E5%BC%8F%E5%BF%83%E8%84%8F%E6%B4%BB%E5%8A%A8%E6%A3%80%E6%B5%8B.pdf)
+我先找到了这篇2023年的论文[[1]《Noncontact Cardiac Activity Detection Based on Single-Channel ISM Band FMCW Radar》](https://doi.org/10.3390/bios13110982)，暂不论期刊的档次，这篇论文的实验场景比较符合我的需求。它使用的是英飞凌(infineon)的[BGT24MTR12](https://www.infineon.com/cms/en/product/sensor/radar-sensors/radar-sensors-for-iot/24ghz-radar/bgt24mtr12/)雷达芯片，24GHz载频 150MHz带宽。同一个作者2021年发的[《High Accuracy Motion Detection Algorithm via ISM Band FMCW Radar》](https://doi.org/10.3390/rs14010058)，这篇论文内容是他2023年那篇的前置，对相位处理这部分将的更详细，他提出**由于频谱泄漏使得傅里叶变换的相位不再与信号的真实相位一致。研究了傅里叶变换实部和虚部的变化规律，给出了椭圆近似的修正相位的方法**，这个功能属于锦上添花没暂时不做考虑。
+
+后来又找到了一篇综述[《Radar-Based Monitoring of Vital Signs: A Tutorial Overview》](https://doi.org/10.1109/JPROC.2023.3244362)，这篇论文档次就比较高了，内容也比较完整，学习毫米波雷达生命感知就以这篇为主，再看看它里面的引文。
+
+
+开放获取的文章我还在网站上拷贝了一份
+-  [Qu, K.; Wei, L.; Zhang, R. Noncontact Cardiac Activity Detection Based on Single-Channel ISM Band FMCW Radar. Biosensors 2023, 13, 982. https://doi.org/10.3390/bios13110982](https://cdn.jsdelivr.net/gh/Huffer342-WSH/myNotes/radar/paper/%E5%9F%BA%E4%BA%8E%E5%8D%95%E9%80%9A%E9%81%93%20ISM%20%E9%A2%91%E6%AE%B5%20FMCW%20%E9%9B%B7%E8%BE%BE%E7%9A%84%E9%9D%9E%E6%8E%A5%E8%A7%A6%E5%BC%8F%E5%BF%83%E8%84%8F%E6%B4%BB%E5%8A%A8%E6%A3%80%E6%B5%8B.pdf)
+-  
+
 
 ## 概述
 
+综述[[1]](#refer-1)中给出了提取生命体征学习的流程图
+
+
+![集中式天线MIMO雷达估计多目标生命体征流程图](./assets/estimating_the_position_and_the_vital_signs_of_multiple_people_by_means_of_a_colocated_MIMO_radar.png)
+
+提取相位信息后
+- 带通滤波并FFT后提取心跳信息
+- 呼吸由于能量比较大，不需要带通滤波这一步。
+  
+提取相位的主要流程如下
+1. 静态杂波滤波，滤除测试目标周围的非周期性运动目标
+2. Range-FFT，检测测试目标的位置，并将生命信号提取限制在该位置的范围内,初步得到相位信息
+3. 相位解缠绕
 
 
 ##  相位差与距离的关系
 
->For FMCW radar, the phase of the beat signal from the target varies linearly with distance. When the target’s position changes by half a wavelength relative to the radar, the phase will shift by 2π.
 
 毫米波雷达的接收信号的相位对目标的位置变化很敏感。因为电磁波传播是一个来回，距离差是物体距离差的两倍，所以两个物体距离差半个波长，相位就会变化2π。当然这是对定频雷达而言的，假如发射信号是调频的，不同时间的两个物体回波的相位差就不是固定的了。
 
@@ -103,22 +122,40 @@ subplot(313);plot(phi_diff,'DisplayName', "调频信号相位差");hold on;plot(
 
 对于LFMCW雷达来说，两个不同位置的目标的回波的相位差也可以用 $\Phi_{\Delta}(t) = 2 \pi (f_{c}+\frac{B}{2})\frac{2d_{\Delta}}{c}$ 近似的代替。一般情况下直接取频域中峰值点的相位即可。
 
-## 求解相位的方法
+## 提取相位
 
 ### 初步得到相位
 
-> The arctangent demodulation method is widely used due to its highest accuracy in motion reconstruction, although it requires the elimination of direct current (DC) offset. 
 
-对于复采样的雷达来说,可以通过反正切函数 $\arctan()$ 直接计算相位 $\phi(t) = \tan^{-1} \left( \frac{Q(t)}{I(t)} \right)$ 。 在计算相位前，要先去除直流分量。
+> ![FMCW雷达系统中可以采用的提取相位信息的方法。](./assets/Methods_that_can_be_used_to_extract_phase_information_in_FMCW_radar_systems.png)
 
-- C 标准库 `<math.h>` 中提供了`atan2()`函数 ，使用`atan2()`函数返回从 x 轴到点 (x, y) 的角度，以弧度为单位。这个函数比单独使用 atan() 函数更强大，因为它考虑了 x 和 y 的符号，从而可以确定正确的象限。在ARM架构的单片机上开发时，还可以使用[CMSIS-DSP](https://github.com/ARM-software/CMSIS-DSP/tree/main)的 `arm_atan2_f32`函数。
+对于FMCW雷达来说，一般再Range-FFT后的频域获取相位信息。时域采集到的数据用 $x$ 表示, $x$ 是一个 $N_{0} \times N_{c}$ 的数组，$N_{0}$ 是每个chrip的采样点数，$N_{c}$ chrip总数。
+时域数据沿着快时间维度FFT（Range-FFT）的得到复数矩阵 $\boldsymbol{\mathrm{X}}$ :
 
-一般来说我们不会直接在时域求相位，毕竟接收到的信号包含多个信号源信号。
-- 对于单通道雷达来说，一般在距离维度（快时间维FFT后的频域）上把不同目标分离开，频域上对应点的相位是目标回波的相位。
-- 对于多通道雷达来说，先通过DOA算法在空间上分离开各个目标，然后通过波束成形还原各个目标的信号再求相位。
+$$
+\begin{equation}
+ X\left [{l,n}\right ]\triangleq \frac {1}{N}\sum _{k=0}^{N-1}x\left [{k,n}\right ]\exp \left ({ -j2\pi nl/N_{0}^{\prime }}\right )\! 
+\end{equation}
+$$
+
+$\tilde {l}$ 表示目标所在的距离单元。$X\left [{\tilde {l},n}\right ]$ 表示Range-FFT频域中第 $\tilde {l}$ 个距离单元的第 $n$ 个点。通过频域点的复数的相位可以得到目标回波的相位
+
+$$
+\begin{equation}
+ \hat {\psi }[ n ]=\angle \left (X\left [{\tilde {l},n}\right ]\right )\! 
+\end{equation}
+$$
+
+***
+**编程实现：** 
+
+C 标准库 `<math.h>` 中提供了`atan2()`函数 ，使用`atan2()`函数返回从 x 轴到点 (x, y) 的角度，以弧度为单位。这个函数比单独使用 atan() 函数更强大，因为它考虑了 x 和 y 的符号，从而可以确定正确的象限。在ARM架构的单片机上开发时，还可以使用[CMSIS-DSP](https://github.com/ARM-software/CMSIS-DSP/tree/main)的 `arm_atan2_f32`函数。
+***
+
   
 ### 相位解缠绕(Phase Unwrapping)
->In addition, since the phase is obtained through the inverse operations of trigonometric functions, which have periodicity, it is necessary to unwrap the calculated phase. There are two main methods for phase unwrapping. The first one is the traditional method, which determines whether the phase difference between two consecutive sampling points is greater than π or less than −π in order to decide whether the current phase should be incremented or decremented by 2π. This judgment process needs to be applied throughout the entire phase sampling procedure. The second method is known as the differentiate and cross multiply (DACM) algorithm [12–14], which calculates the discrete accumulation expression of the phase by first differentiating and then integrating it.
+
+>![相位解缠绕](./assets/PaperText_Phase_Unwrapping.png)
 
 由于初步解出来的相位是周期性的，所以需要解缠绕。举一个例子，假设上一步解得相位值域为 $[- \pi ,pi)$ ,前后得到两个相位 $0.9\pi$ 和 $-0.9 \pi$ ，那么实际上的相位可能是增加了 $0.2\pi$ 也可能是 $0.2+2k\pi,k \in Z,k \neq 0$ ，这个时候我们就要选取一个正确的值。
 
@@ -136,13 +173,23 @@ $$
 $$
 
 
-### 普通的接缠绕方法
+### 普通的解缠绕方法
 
 相位解缠绕的基本步骤就是先判断相邻的两个采样点的相位差，再累加，判断相位差的标准是 $|\Delta \phi |< \pi$，如果大于$\pi$，则需要加减 $2\pi$。调整相位差。
 
-### DACM算法接缠绕
+### DACM算法解缠绕
 
-文中还提到了DACM算法(differentiate and crossmultiply algorithm)，这是一种更适合电路设计的算法，它不适用反正切函数而是使用反正切函数的微分性质计算两个采样点的相位差，公式推导如下：
+>However, the use of unwrapping may introduce errors in the presence of abrupt phase variations. In this case, the extended differentiate and cross-multiply (DACM) algorithm proposed in [71] or its modified version [72] should be employed to achieve precise phase unwrapping
+
+文中还提到，在相位突然变化的情况下，普通的展开方式可能会引入错误，使用DACM算法(differentiate and crossmultiply algorithm)可以减轻这个问题。
+引用的两篇文章中有详细的介绍DACM算法。
+
+- [《Noncontact Distance and Amplitude-Independent Vibration Measurement Based on an Extended DACM Algorithm》](https://doi.org/10.1109/TIM.2013.2277530)，这篇论文中也有做心跳检测的实验。
+- [《Large Displacement Motion Interferometry With Modified Differentiate and Cross-Multiply Technique》](https://ieeexplore.ieee.org/document/9514546)
+
+
+
+DACM还是是一种适合电路设计的算法，因为它不使用反正切函数而是使用反正切函数的微分性质计算两个采样点的相位差。基础版本的公式推导如下：
 
 记 $X(n)$ 为采样点序列， 再毫米波雷达应用中 $X(n)$ 每一个chrip分别傅里叶变换到频域后，取同一个位置的点排列组成的。$X_{R}(n)$ 为实部，$X_{I}(n)$ 为虚部。每个点相位计算的方法如下：
 
@@ -237,4 +284,36 @@ subplot(313); hold on; plot(t, unwrap_phase1, "DisplayName", "普通方法"); pl
 
 ![相位解缠绕测试结果](./assets/demo_phase_unwrap.png)
 
-DACM作为一种利用差分近似微分的算法，采样频率越高精度越高。由于DACM算法不用计算反正切函数，所以适合在数字电路上实现，甚至可以用运放搭建模拟电路。不过其表达式中也包含除法，感觉CORDIC算法求相位依然会更好一点。
+DACM作为一种利用差分近似微分的算法，采样频率越高精度越高。鉴于心跳和呼吸的速度都比较慢，选取chrip周期的时候一般都会满足测量人体行走所需的采样频率，DACM的精度应该是足够的。
+
+
+## 生命体征提取
+
+生命体征提取这个功能种类很多，比较热门的如模态分解，机器学习等。
+
+不过我暂时只需要借助这部分功能来做存在感知，所以我只需要计算呼吸信号的功率，作为判断目标是否为人体的标准。
+
+
+## 实验结果
+
+![alt text](./assets/Exp-results_phase_of_static_human_body_signal.png)
+
+![alt text](./assets/Exp-results_Breath_detect.png)
+
+## 参考文献
+
+<div id="refer-1"></div>
+
+[1]:  [G. Paterniani et al., "Radar-Based Monitoring of Vital Signs: A Tutorial Overview," in Proceedings of the IEEE, vol. 111, no. 3, pp. 277-317, March 2023, doi: 10.1109/JPROC.2023.3244362.](https://doi.org/10.1109/JPROC.2023.3244362)
+
+<div id="refer-2"></div>
+
+[2] [Qu, Kui, Rongfu Zhang, and Zhijun Fang. 2022. "High Accuracy Motion Detection Algorithm via ISM Band FMCW Radar" Remote Sensing 14, no. 1: 58. https://doi.org/10.3390/rs14010058](https://doi.org/10.3390/rs14010058)
+
+<div id="refer-3"></div>
+
+[3] [J. Wang, X. Wang, L. Chen, J. Huangfu, C. Li and L. Ran, "Noncontact Distance and Amplitude-Independent Vibration Measurement Based on an Extended DACM Algorithm," in IEEE Transactions on Instrumentation and Measurement, vol. 63, no. 1, pp. 145-153, Jan. 2014, doi: 10.1109/TIM.2013.2277530.](https://ieeexplore.ieee.org/document/6583987)
+
+<div id="refer-4"></div>
+
+[4] [W. Xu, Y. Li, C. Gu and J. -F. Mao, "Large Displacement Motion Interferometry With Modified Differentiate and Cross-Multiply Technique," in IEEE Transactions on Microwave Theory and Techniques, vol. 69, no. 11, pp. 4879-4890, Nov. 2021, doi: 10.1109/TMTT.2021.3103576.](https://ieeexplore.ieee.org/document/9514546)

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: GNU-Radio中ZMQ模块的Pass-Tags
-date: 2024-05-19 19:35:00
+date: 2024-07-12 18:24:00
 categories: [细枝末节]
 excerpt:  GNU-Radio中ZMQ模块可选"Pass tags"选项，选择该选项后，ZMQ模块再传输数据时会在数据包的头部添加额外19Bytes的头部，其中包含数据的offset信息。
 ---

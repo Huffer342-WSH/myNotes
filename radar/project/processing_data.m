@@ -2,8 +2,14 @@ clear; clc; close all
 addpath '.\function'
 
 %% 加载数据
-radar_data_cube_range = load('./data/RadarData_2024_05_31_09_34_52.mat', 'frames').frames;
-radar_data_cube = ifft(radar_data_cube_range, size(radar_data_cube_range, 4), 4);
+data = load('./data/RadarData_2024_05_31_09_34_52.mat');
+[numFrame, numChannel, numChrip, numSampling] = size(data.frames);
+if(data.data_type == '1dfft')
+radar_data_cube = ifft(data.frames, numSampling, 4);
+else
+radar_data_cube = data.frames;
+end
+
 %% 参数设置
 bandWidth = 1000e6; %带宽
 fc = 24e9; % 载波频率
@@ -12,7 +18,6 @@ T_idle = 2588e-6; % 两个chirp之间的间隔时间
 T_nop = 118e-6;
 Fs = 2.5e6/8;
 
-[numFrame, numChannel, numChrip, numSampling] = size(radar_data_cube);
 numTx = 1; % 发射天线数量
 numRx = 2; % 接收天线数量
 

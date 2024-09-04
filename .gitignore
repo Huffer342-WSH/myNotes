@@ -1,3 +1,4 @@
 *.asv
 **/html/**/*.md
- 
+
+**/__pycache__/

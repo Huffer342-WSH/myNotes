@@ -79,3 +79,8 @@ cd进解压出来的文件夹里面后安装
 ## 6. 配置vivado环境变量
 
 在Vivado的安装目录下面有一个设置环境的脚本：settings64.sh。不止在Vivado下面有，Vitis、HLS的目录里都有。把里面的东西复制到`~/.profile`或者`/etc/profile`里，区别是一个是全局的，一个是单用户的。
+
+
+## 7. WSL连接USB设备
+
+[《连接 USB 设备》](https://learn.microsoft.com/zh-cn/windows/wsl/connect-usb)

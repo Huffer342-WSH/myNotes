@@ -76,7 +76,7 @@ git config --get user.email
 **设置VSCode中Git Commit记录中的头像**
 
 VSCode是根据commit的邮箱，从[https://gravatar.com/](https://gravatar.com/)中找的头像。只需要用同一个邮箱在[gravatar](https://gravatar.com/)注册一个账号，提交头像就可以了
-![alt text](./assets/Screenshot-of-git-commit-in-vscode.png)
+![alt text](../assets/use-git-in-vscode/Screenshot-of-git-commit-in-vscode.png)
 
 
 
@@ -84,27 +84,27 @@ VSCode是根据commit的邮箱，从[https://gravatar.com/](https://gravatar.com
 ### 2.3 初始化本地仓库
 
 打开工程根目录，点击`Initialize Repository`初始化仓库
-![VSCode仓库初始化](./assets/Initialize-Repository.png)
+![VSCode仓库初始化](../assets/use-git-in-vscode/Initialize-Repository.png)
 
 可以看到在git日志中使用了
 ``` shell
 git init -b main
 ```
 意思是初始化一个新的 Git 仓库，并将默认分支名称设置为 `main`。
-![VSCode git 初始化日志](./assets/git-log-init.png)
+![VSCode git 初始化日志](../assets/use-git-in-vscode/git-log-init.png)
 
 初始化仓库工程根目录新增一个隐藏的`.git`文件夹。
-![git文件夹](./assets/git-folder.png)
+![git文件夹](../assets/use-git-in-vscode/git-folder.png)
 
 ### 2.4 发布到github
 
 VSCode中可以一键提交到Github，点底部状态栏的☁图标就行了。或者在命令面板搜索`publish to github`
 
-![发布到github](./assets/git-publish.png)
+![发布到github](../assets/use-git-in-vscode/git-publish.png)
 
 发布的时候可以设置仓库的名字，默认时当前文件夹的名字，还可以选择私有还是公共。
 
-![发布到Github时设置信息](./assets/git-publish-to-github-pannel.png)
+![发布到Github时设置信息](../assets/use-git-in-vscode/git-publish-to-github-pannel.png)
 
 ### 2.5 暂存、提交文件
 
@@ -118,13 +118,13 @@ git commit -m "Your commit message" #将暂存区中的文件提交，并带有�
 ```
 
 在VScode中的`'SOURCE CONTRIL' > 'Changes'`面板中可以暂存想要的文件或者文件夹，暂存后会显示在`'Staged Changes'`面板中。
-![Git Stage in VSCode](./assets/git-stage.png)
+![Git Stage in VSCode](../assets/use-git-in-vscode/git-stage.png)
 
-![Git Staged in VSCode](./assets/git-unstage.png)
+![Git Staged in VSCode](../assets/use-git-in-vscode/git-unstage.png)
 
 暂存后的文件就可以提交了。在点`Commit`按钮前输入Message了的话，点击时就直接提交了。假如Message是空白的，就会自动打开一个新的文件来输入Message。
 
-![git commit message in VSCode](./assets/git-commit-message.png)
+![git commit message in VSCode](../assets/use-git-in-vscode/git-commit-message.png)
 
 合作时提交信息要遵循一致的规范，参考[约定式提交 1.0.0](https://www.conventionalcommits.org/zh-hans/v1.0.0/)。
 
@@ -140,21 +140,19 @@ git commit -m "Your commit message" #将暂存区中的文件提交，并带有�
 Git新建分支可以从一个已有的分支为基点分叉出一个新的分支（一般都是从已有分支的最新提交作为基点）。
 装了GitLens拓展后VSCode里有好几个地方都能找到新建分支按钮，这里贴个VSCode默认就有的：
 
-![git create branch](./assets/git-create-branch.png)
+![git create branch](../assets/use-git-in-vscode/git-create-branch.png)
 
 VSCode命令栏里也能找到（Ctrl+Shift+P 打开命令栏）
 
-![VSCode命令栏中的git create branch](./assets/git-create-branch-vscode-cmd.png)
+![VSCode命令栏中的git create branch](../assets/use-git-in-vscode者选择指令后，先选择一个已有的分支作为基础。
 
-点击按钮或者选择指令后，先选择一个已有的分支作为基础。
-
-![选择已有分支](./assets/git-chose-ref-branch.png)
+![选择已有分支](../assets/use-git-in-vscode/git-chose-ref-branch.png)
 
 然后需要输入新分支的名字，这里先新建一个`develop`分支
-![设置新分支的名字](./assets/git-provide-new-name-for-branch.png)
+![设置新分支的名字](../assets/use-git-in-vscode/git-provide-new-name-for-branch.png)
 
 新建后就可以在底部状态栏和左侧栏中看到新建的分支了。
-![vscode中查看分支](./assets/git-create-branch-result.png)
+![vscode中查看分支](../assets/use-git-in-vscode/git-create-branch-result.png)
 
 ### 2.7 切换分支
 
@@ -166,7 +164,7 @@ git checkout <branch-name>
 
 在VSCode中，底部状态栏中显示当前分支的名字，点击就可以切换分支或者新建分支。
 
-![VSCode git切换分支](./assets/git-check-out-branch.png)
+![VSCode git切换分支](../assets/use-git-in-vscode/git-check-out-branch.png)
 
 
 ### 2.8 在新分支开发并合并分支
@@ -177,7 +175,7 @@ git checkout <branch-name>
 
 首先用户A新建并切换到新的分支'feature/A'，写两个函数`sum()`和`sub()`并提交。
 
-![在新分支中写函数](./assets/git-featA-new-func.png)
+![在新分支中写函数](../assets/use-git-in-vscode/git-featA-new-func.png)
 
 提交完之后用户A自己合并分支。合并分支有两中方式：`git merge`和`git rebase`。这里先演示`merge`。
 
@@ -188,42 +186,42 @@ git checkout <branch-name>
 
 2. 从`'SOURCE CONTROL'`面板的菜单中找到。或者在命令面板中搜索`merge`，可以搜到GitLens和Git提供的`merge`指令，两个大差不差。
 
-![VSCode merge按钮](./assets/git-merge-1.png)
+![VSCode merge按钮](../assets/use-git-in-vscode/git-merge-1.png)
 
 3. 选择要合并的分支，这里选择`feature/A`。
 
-![VSCode merge 选择分支](./assets/git-merge_2.png)
+![VSCode merge 选择分支](../assets/use-git-in-vscode/git-merge_2.png)
 
 然后就会看到当前分支里多了`feature/A`分支的提交。
 
-![git merge 结果](./assets/git-merge-3.png)
+![git merge 结果](../assets/use-git-in-vscode/git-merge-3.png)
 
 
 #### 2.8.2 用户B拉取develop分支并解决冲突
 
 用户A把刚才的改动分支推到Github后，用户B打开VSCode的时候就会看到`develop`红了。可以选择fetch或者pull下载改动。
-![用户B VSCode界面看到分支变化](./assets/git-UserB-fetch.png)
+![用户B VSCode界面看到分支变化](../assets/use-git-in-vscode/git-UserB-fetch.png)
 
 这边用户B先在develop分支提交两个commit`sum()`和`multiply()`，制造冲突。此时远程分支和本地分支存在冲突。在VSCode中点击`Pull`后会提示存在冲突。
 
-![VSCode 拉去冲突](./assets/git-pull-conflicts.png)
+![VSCode 拉去冲突](../assets/use-git-in-vscode/git-pull-conflicts.png)
 
 Pull后可以看到sum.py和sub.py都已经拉取下来了。观察左侧边栏可以看到存在冲突的sum.py在`Merge Changes`面板中，没有冲突的sub.py则已经在暂存区了。
 
 VScode会打开一个合并管理器，两个分支里二选一解决冲突，当然也可以再添加一些改动。修改完成后点击`Complete Merge`按钮就可以了。
 
 
-![VSCode拉取冲突 缓存区](./assets/git-pull-merge-1.png)
+![VSCode拉取冲突 缓存区](../assets/use-git-in-vscode/git-pull-merge-1.png)
 
-![VSCode拉取冲突 解决冲突](./assets/git-pull-merge-2.png)
+![VSCode拉取冲突 解决冲突](../assets/use-git-in-vscode/git-pull-merge-2.png)
 
-![VSCode git graph](./assets/git-graph-1.png)
+![VSCode git graph](../assets/use-git-in-vscode/git-graph-1.png)
 
 #### 2.8.3 用户B再feature/B分支上开发，A更新了develop分支，用户B拉取develop分支并解决冲突
 
 用户B新建了自己的`feature/B`分支，然后写了`main.py`文件,用来将两个列表中的数分别相加。
 
-![main.py](./assets/main.py-1.png)
+![main.py](../assets/use-git-in-vscode/main.py-1.png)
 
 用户B刚准备把这个合并到develop分支时，发现用户A很体贴的给他准备了一个新的`sum()`函数,可以直接输入两个列表并求和。那么用户B该怎么才能用上最新的功能呢？
 和之前合并分支一样有两种选择`merge`和`rebase`：
@@ -236,28 +234,28 @@ merge的过程和上文中的一样，下图是merge并提交了新的代码后�
 
 用户B再写main.py的过程中发现用户A还在sum()函数里留了个bug，用户A在用户B合并分支前又在develop分支提交了新的sub()函数，不过用户B暂时不需要这个函数，所以就没有再次把develop分支上的东西合并到子的`feature/B`分支上。可以看到使用merge合并分支的话，可以保留提交的顺序。不过在开发的过程中各个分支又相关功能的变动还是要尽量避免的。
 
-![VSCode Merge结果](./assets/git-merge-4.png)
+![VSCode Merge结果](../assets/use-git-in-vscode/git-merge-4.png)
 
 
 ##### rebase
 下面主要展示rebase。因为这里的需求是将公共分支的修改应用到用户B自己的分支上，使用rebase并不会影响其他人。使用rebase相当于改变了这个分支的起点，让`feature/B`变成从`develop`最新的提交上派生出来。
 
 下文是rebase前的状态，用户B刚写完main.py， 用户A就在把新的sum()函数合并到develop分支上了。这个时候用户B就可以使用rebase让自己的分支变成从最新的develop分支派生出来。
-![rebase前的状态](./assets/git-rebase-0.png)
+![rebase前的状态](../assets/use-git-in-vscode/git-rebase-0.png)
 
-![VSCode rebase](./assets/git-rebase-1.png)
+![VSCode rebase](../assets/use-git-in-vscode/git-rebase-1.png)
 
-![选择新基点](./assets/git-rebase-3.png)
+![选择新基点](../assets/use-git-in-vscode/git-rebase-3.png)
 
 下图是用户B rebase后，开发完新功能并`merge`到develop分支后的结果。对比上面使用`merge`获取公共分支更新的方式，rebase的流程图更加简洁，不会像蜘蛛网一样，所以在私人分支上更建议使用rebase，
 
-![使用rebase获取新代码并merge后的结果](./assets/git-merge-5.png)
+![使用rebase获取新代码并merge后的结果](../assets/use-git-in-vscode/git-merge-5.png)
 
 #### 2.8.4 在把功能分支合并到公共分支前使用rebase
 
 先将私人分支`rebase`到最新的公共分支提交后面，然后再`merge`到公共分支，可以使得`merge`前各个分支上没有新的提交，使得各个分支的提交历史是串行的。
 
-![再merge前rebase](./assets/git-rebase-brefore-merge.png)
+![再merge前rebase](../assets/use-git-in-vscode/git-rebase-brefore-merge.png)
 
 >到此为止常用的git操作就讲完了，冲突和中途从公共分支合并代码还是比较烦人的，在分配任务的时候要尽量避免这种情况。在合并代码前一定要验证过，不要给别人挖坑。
 

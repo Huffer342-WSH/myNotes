@@ -36,7 +36,7 @@ ls (hd0,gpt1
 ```
 输出如下图
 
-![列出所有分区](./assets/Lists-all-partitions.webp)
+![列出所有分区](../assets/repair-linux-grub/Lists-all-partitions.webp)
 可以看到第三个`ext*`类型的分区就是linux的根目录所在分区。
 
 接着输入
@@ -62,7 +62,7 @@ linux /path/to/<内核映像文件> root=/dev/<根目录分区>
 cat /etc/fstab
 ```
 
-![查看分区设备名](./assets/View-the-partition-device-name.webp)
+![查看分区设备名](../assets/repair-linux-grub/View-the-partition-device-name.webp)
 
 可以看到输出`# / was on /dev/sdb3 during installation.`，说明根目录在`/dev/sdb3`，所以`root=/dev/sdb3`。
 
@@ -97,7 +97,7 @@ boot
 ```
 ## 完整截图
 
-![修复linux系统Grub引导](./assets/Repair-Linux-system-Grub-boot.webp)
+![修复linux系统Grub引导](../assets/repair-linux-grub/Repair-Linux-system-Grub-boot.webp)
 
 ## 进了系统后怎么修复引导
 

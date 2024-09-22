@@ -78,10 +78,32 @@ git config --get user.email
 VSCode是根据commit的邮箱，从[https://gravatar.com/](https://gravatar.com/)中找的头像。只需要用同一个邮箱在[gravatar](https://gravatar.com/)注册一个账号，提交头像就可以了
 ![alt text](../assets/use-git-in-vscode/Screenshot-of-git-commit-in-vscode.png)
 
+### 2.3 设置autolf
+
+windows下换行为CRLF，类Unix系统均为LF。我们希望git仓库中保存的文件都是统一的LF换行。
+
+---
+**Windows 用户：**
+打开 Git Bash 或命令行，执行以下命令，使得 Git 在检出时将行尾符转换为 CRLF，在提交时转换为 LF：
+
+```bash
+git config --global core.autocrlf true
+```
+
+---
+
+**Linux 用户：**
+在终端执行以下命令，使得 Git 在检出和提交时保持 LF 不变：
+
+```bash
+git config --global core.autocrlf input
+```
+---
+
+这样设置后，Windows 用户在检出文件时会看到 CRLF 行尾符，而 Linux 用户会看到 LF 行尾符。在提交到仓库时，所有行尾符都将被统一为 LF，从而避免行尾符混乱的问题。
 
 
-
-### 2.3 初始化本地仓库
+### 2.4 初始化本地仓库
 
 打开工程根目录，点击`Initialize Repository`初始化仓库
 ![VSCode仓库初始化](../assets/use-git-in-vscode/Initialize-Repository.png)
@@ -96,7 +118,7 @@ git init -b main
 初始化仓库工程根目录新增一个隐藏的`.git`文件夹。
 ![git文件夹](../assets/use-git-in-vscode/git-folder.png)
 
-### 2.4 发布到github
+### 2.5 发布到github
 
 VSCode中可以一键提交到Github，点底部状态栏的☁图标就行了。或者在命令面板搜索`publish to github`
 
@@ -106,7 +128,7 @@ VSCode中可以一键提交到Github，点底部状态栏的☁图标就行了�
 
 ![发布到Github时设置信息](../assets/use-git-in-vscode/git-publish-to-github-pannel.png)
 
-### 2.5 暂存、提交文件
+### 2.6 暂存、提交文件
 
 `git add` 命令用于将文件的更改添加到暂存区（staging area）; `git commit` 命令用于将暂存区的更改记录到本地仓库。
 
@@ -130,7 +152,7 @@ git commit -m "Your commit message" #将暂存区中的文件提交，并带有�
 
 我实验室项目之前的代码的提交属于是有一点点规范。之后多人合作时得统一规范了。
 
-### 2.6 新建分支（派生分支）
+### 2.7 新建分支（派生分支）
 
 分支功能方便多个人共同开发，每个人再自己的分支中独立开发，然后合并到公共分支（最好不要一起改一个文件，要不然要解决冲突）。
 
@@ -154,7 +176,7 @@ VSCode命令栏里也能找到（Ctrl+Shift+P 打开命令栏）
 新建后就可以在底部状态栏和左侧栏中看到新建的分支了。
 ![vscode中查看分支](../assets/use-git-in-vscode/git-create-branch-result.png)
 
-### 2.7 切换分支
+### 2.8 切换分支
 
 `git checkout`指令用于切换到一个已有的分支。
 
@@ -167,11 +189,11 @@ git checkout <branch-name>
 ![VSCode git切换分支](../assets/use-git-in-vscode/git-check-out-branch.png)
 
 
-### 2.8 在新分支开发并合并分支
+### 2.9 在新分支开发并合并分支
 
 
 
-#### 2.8.1 用户A开发功能
+#### 2.9.1 用户A开发功能
 
 首先用户A新建并切换到新的分支'feature/A'，写两个函数`sum()`和`sub()`并提交。
 
@@ -197,7 +219,7 @@ git checkout <branch-name>
 ![git merge 结果](../assets/use-git-in-vscode/git-merge-3.png)
 
 
-#### 2.8.2 用户B拉取develop分支并解决冲突
+#### 2.9.2 用户B拉取develop分支并解决冲突
 
 用户A把刚才的改动分支推到Github后，用户B打开VSCode的时候就会看到`develop`红了。可以选择fetch或者pull下载改动。
 ![用户B VSCode界面看到分支变化](../assets/use-git-in-vscode/git-UserB-fetch.png)
@@ -217,7 +239,7 @@ VScode会打开一个合并管理器，两个分支里二选一解决冲突，�
 
 ![VSCode git graph](../assets/use-git-in-vscode/git-graph-1.png)
 
-#### 2.8.3 用户B再feature/B分支上开发，A更新了develop分支，用户B拉取develop分支并解决冲突
+#### 2.9.3 用户B再feature/B分支上开发，A更新了develop分支，用户B拉取develop分支并解决冲突
 
 用户B新建了自己的`feature/B`分支，然后写了`main.py`文件,用来将两个列表中的数分别相加。
 
@@ -251,7 +273,7 @@ merge的过程和上文中的一样，下图是merge并提交了新的代码后�
 
 ![使用rebase获取新代码并merge后的结果](../assets/use-git-in-vscode/git-merge-5.png)
 
-#### 2.8.4 在把功能分支合并到公共分支前使用rebase
+#### 2.9.4 在把功能分支合并到公共分支前使用rebase
 
 先将私人分支`rebase`到最新的公共分支提交后面，然后再`merge`到公共分支，可以使得`merge`前各个分支上没有新的提交，使得各个分支的提交历史是串行的。
 
@@ -260,6 +282,6 @@ merge的过程和上文中的一样，下图是merge并提交了新的代码后�
 >到此为止常用的git操作就讲完了，冲突和中途从公共分支合并代码还是比较烦人的，在分配任务的时候要尽量避免这种情况。在合并代码前一定要验证过，不要给别人挖坑。
 
 
-### 2.9 为什么不建议使用rebase把私人分支的提交合并到公共分支上
+### 2.10 为什么不建议使用rebase把私人分支的提交合并到公共分支上
 
 具体的来说，是不要rebase公共分支中别人已经引用的提交。因为rebase其实是把已有的提交暂存，并在新的基点上重新提交，提交的哈希值会发生变化。一但把rebase过的公共分支发布，在别人的视角里就会出现一模一样的新提交。

@@ -4,7 +4,7 @@ title: petalinux设计流程
 date: 2024-10-04 20:12:43
 categories: [ZYNQ笔记]
 excerpt: 简单记录petalinux的设计流程
-hide: index
+hide: false
 ---
 
 

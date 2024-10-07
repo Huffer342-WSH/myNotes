@@ -27,6 +27,7 @@ sudo apt install nfs-kernel-server
 
 ### 2.2 配置共享目录
 
+
 选择需要共享的目录，假设我们需要将 `/mnt/share` 目录通过 NFS 共享：
 ```bash
 sudo mkdir -p /mnt/share
@@ -43,8 +44,14 @@ sudo nano /etc/exports
 /mnt/share 192.168.1.101(rw,async,no_subtree_check,no_wdelay)
 ```
 
+`/etc/exports`文件中配置的内容的含义在Red Hat文档里有说明：[《21.7. The /etc/exports Configuration File》](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-nfs-server-config-exports),
 
-如果要挂载的目录位于一个ntfs文件系统中，需要设置`no_root_squash`，比如：
+此外，GoLinuxCloud 也提供了一些实用的例子:[《10 practical examples to export NFS shares in Linux
+》](https://www.golinuxcloud.com/nfs-exports-options-examples/#8_Export_NFS_share_as_Read_Write_Mode)
+
+
+---
+**如果要挂载的目录位于一个ntfs文件系统中**，需要设置`no_root_squash`，比如：
 ```bash
 /mnt/share 192.168.1.101(rw,async,no_root_squash,no_subtree_check)
 ```
@@ -53,7 +60,7 @@ sudo nano /etc/exports
 
 可能是由于 NTFS 和 Linux 本地文件系统（如`ext4`）的权限模型不同，导致权限冲突，`no_root_squash` 参数的作用是**允许NFS客户端以root用户的权限访问NFS服务器上的文件**。
 
-
+---
 
 
 ### 2.3 应用更改

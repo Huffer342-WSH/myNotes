@@ -170,6 +170,10 @@ oh-my-posh init pwsh --config ~/AppData/Local/Programs/oh-my-posh/themes/my-them
 
 其中`~/AppData/Local/Programs/oh-my-posh/themes/my-theme.omp.json`是主题配置文件的路径，我的主题是在[catppuccin主题](https://github.com/JanDeDobbeleer/oh-my-posh/blob/main/themes/catppuccin.omp.json)的基础上改过来的,链接：[my-theme.omp.json](https://github.com/Huffer342-WSH/myNotes/blob/main/guide/resource/my-theme.omp.json)
 
+我的主题在VSCode里是下图的效果，会显示git和python环境的信息
+
+
+![alt text](../assets/Optimizing_PowerShell/my-theme.png)
 
 ## 4. 安装 posh-git 提供Git指令支持
 

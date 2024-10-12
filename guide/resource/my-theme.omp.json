@@ -65,13 +65,31 @@
       "type": "prompt"
     },
     {
+      "alignment": "right",
+      "segments": [
+        {
+          "background": "#3670A0",
+          "foreground": "#FFDC53",
+          "leading_diamond": " \ue0b6",
+          "properties": {
+            "fetch_version": false
+          },
+          "style": "diamond",
+          "template": "\ue235 {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{.Venv}}{{ end }}{{ .Full }}{{ end }}",
+          "trailing_diamond": "\ue0b4",
+          "type": "python"
+        }
+      ],
+      "type": "prompt"
+    },
+    {
       "alignment": "left",
       "newline": true,
       "segments": [
         {
           "foreground": "#8AADF4",
           "style": "plain",
-          "template": "\u276f",
+          "template": "\u276f ",
           "type": "text"
         }
       ],

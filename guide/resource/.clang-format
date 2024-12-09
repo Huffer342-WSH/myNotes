@@ -30,8 +30,8 @@ BreakConstructorInitializersBeforeComma: false # 构造函数初始化列表的�
 BreakConstructorInitializers: BeforeComma # 构造函数初始化列表换行位置。
 
 
-
-ColumnLimit: 100 # 每行的最大列数。
+PointerAlignment: Right # 指针对齐方式。
+ColumnLimit: 200 # 每行的最大列数。
 
 CommentPragmas: '^ IWYU pragma:' # 注释中的编译指令正则匹配。
 

@@ -2,22 +2,22 @@ clear; clc; close all
 addpath '.\function'
 bandWidth = 250e6; %带宽
 fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 580e-6; % 两个chirp之间的间隔时间
 Fs = 2.5e6;
 SNR = 10; % 噪声信号比
 
-numADC = 256; % # ADC采样点数/chrip
-numChirps = 32; % # chrip/frame
+numADC = 256; % # ADC采样点数/chirp
+numChirps = 32; % # chirp/frame
 numCPI = 16; % frame数量
 numTx = 1; % 发射天线数量
 numRx = 8; % 接收天线数量
 numChannel = numTx * numRx;
 
-max_range = 255 * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chrip);
-max_velocity = (numChirps - 1) * physconst('LightSpeed') / (2 * fc * (T_chrip + T_idle) * numChirps);
-axis_t = 0:1 / Fs:(T_chrip + T_idle) * numCPI * numChirps; % 时间轴
-axis_range = (255:-1:0) * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chrip); %输入信号混频后是负频率，因此坐标轴反向
+max_range = 255 * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chirp);
+max_velocity = (numChirps - 1) * physconst('LightSpeed') / (2 * fc * (T_chirp + T_idle) * numChirps);
+axis_t = 0:1 / Fs:(T_chirp + T_idle) * numCPI * numChirps; % 时间轴
+axis_range = (255:-1:0) * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chirp); %输入信号混频后是负频率，因此坐标轴反向
 axis_velocity = (floor(numChirps / 2):-1: - floor(numChirps / 2) + 1) / (numChirps - 1) * max_velocity;
 axis_angle = (-90:1:90);
 
@@ -39,7 +39,7 @@ phased_ula = phased.ULA('NumElements', numRx * numTx, 'ElementSpacing', d_rx);
 ula_pos = getElementPosition(phased_ula);
 
 %% 生成信号
-[channel_signal, ref_signal] = lfmcw_signal_generator(fc, bandWidth, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info);
+[channel_signal, ref_signal] = lfmcw_signal_generator(fc, bandWidth, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info);
 
 %% 绘制时域波形图
 
@@ -53,10 +53,10 @@ ula_pos = getElementPosition(phased_ula);
 
 %% 从ADC数据中抽取出radar_data_cube
 % 从channel_signal中抽取出需要的数据组成radar_data_cube
-% radar_data_cube 是一个四维数组,四个维度分别为: 帧编号 通道编号 chrip编号 采样点数
+% radar_data_cube 是一个四维数组,四个维度分别为: 帧编号 通道编号 chirp编号 采样点数
 
 offset = 10;
-start_index = (0:T_chrip + T_idle:max(axis_t));
+start_index = (0:T_chirp + T_idle:max(axis_t));
 start_index = start_index(1:end - 1);
 start_index = round(start_index .* Fs + offset);
 start_index = reshape(start_index, [numChirps, numCPI]);
@@ -94,7 +94,7 @@ steering_vectors = steering_vector(ula_pos, [axis_angle; zeros(size(axis_angle))
 
 %% 取出一帧数据
 frame = squeeze(radar_data_cube(1, :, :, :));
-x = squeeze(mean(frame(:, 1:1, :), 2)); %累计不同chrip的信号（高速运动的目标累积可能会带来角度模糊）
+x = squeeze(mean(frame(:, 1:1, :), 2)); %累计不同chirp的信号（高速运动的目标累积可能会带来角度模糊）
 x = x - mean(x, 2); % 减去均值
 Cxx = x * x';
 %% Capon算法测角——matlab工具箱 phased.MVDRBeamformer

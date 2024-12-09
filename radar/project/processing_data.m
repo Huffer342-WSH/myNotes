@@ -3,7 +3,7 @@ addpath '.\function'
 
 %% 加载数据
 data = load('./data/RadarData_2024_05_31_09_34_52.mat');
-[numFrame, numChannel, numChrip, numSampling] = size(data.frames);
+[numFrame, numChannel, numChirp, numSampling] = size(data.frames);
 if(data.data_type == '1dfft')
 radar_data_cube = ifft(data.frames, numSampling, 4);
 else
@@ -13,7 +13,7 @@ end
 %% 参数设置
 bandWidth = 1000e6; %带宽
 fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 2588e-6; % 两个chirp之间的间隔时间
 T_nop = 118e-6;
 Fs = 2.5e6/8;
@@ -35,12 +35,12 @@ tx_pos = [zeros(1, numTx); linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 1); zero
 rx_pos = [zeros(1, numRx); linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1); zeros(1, numRx)];
 
 %% 计算坐标轴
-max_velocity = (numChrip - 1) * physconst('LightSpeed') / (2 * fc * (T_chrip + T_idle) * numChrip);
-axis_t = 0:1 / Fs:(T_chrip + T_idle) * numFrame * numChrip; % 时间轴
-axis_range = (0:numSampling - 1) * physconst('LightSpeed') / 2 / (bandWidth * numSampling * (1 / Fs) / T_chrip); %输入信号混频后是负频率，因此坐标轴反向
-axis_velocity = -1 .* (floor(numChrip / 2):-1: - floor(numChrip / 2) + 1) / (numChrip - 1) * max_velocity;
+max_velocity = (numChirp - 1) * physconst('LightSpeed') / (2 * fc * (T_chirp + T_idle) * numChirp);
+axis_t = 0:1 / Fs:(T_chirp + T_idle) * numFrame * numChirp; % 时间轴
+axis_range = (0:numSampling - 1) * physconst('LightSpeed') / 2 / (bandWidth * numSampling * (1 / Fs) / T_chirp); %输入信号混频后是负频率，因此坐标轴反向
+axis_velocity = -1 .* (floor(numChirp / 2):-1: - floor(numChirp / 2) + 1) / (numChirp - 1) * max_velocity;
 axis_angle = (-90:1:90);
-T_frame = (T_chrip+T_idle)*numChrip+T_nop  ;
+T_frame = (T_chirp+T_idle)*numChirp+T_nop  ;
 %% 导向矢量矩阵 （MVDR和MUSIC通用）
 steering_vectors = steering_vector(rx_pos, [axis_angle; zeros(size(axis_angle))], physconst('LightSpeed') / (fc+bandWidth/2));
 
@@ -51,16 +51,16 @@ figure()
 title("观察相干性")
 hold on;
 for i = 1:6
-    chrip = squeeze(frame(1, i*2, :));
-    plot(real(chrip))
+    chirp = squeeze(frame(1, i*2, :));
+    plot(real(chirp))
 end
 m = squeeze(mean(frame(1, :, :),2));
 plot(real(m),"-*")
 hold off;
 
-%% 计算chrip全局均值
-chrip_mean = mean(radar_data_cube, [1, 3]);
-% radar_data_cube = radar_data_cube -chrip_mean;
+%% 计算chirp全局均值
+chirp_mean = mean(radar_data_cube, [1, 3]);
+% radar_data_cube = radar_data_cube -chirp_mean;
 
 %% 观察距离
 figure('Name', 'RDM')
@@ -131,7 +131,7 @@ for f = 1:size(radar_data_cube, 1)
     colorbar;
     xlabel('X');
     ylabel('Y');
-    title(['Time ', num2str((f - 1) * ((T_chrip + T_idle) * numChrip + T_nop))]);
+    title(['Time ', num2str((f - 1) * ((T_chirp + T_idle) * numChirp + T_nop))]);
     clim(caxis_range); % 设置颜色范围
     drawnow;
 

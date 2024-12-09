@@ -46,36 +46,36 @@ LFMCW雷达发射调频信号，接收到的信号和当前发射信号混频得
 
 ![发射信号示意图](./assets/Time-frequency_diagram_of_LFMCW_signal.webp)
 
-LFMCW雷达发射信号在一个时长为 $T_{chrip}$ 的chrip内线性调频，两个chrip之间会间隔 $T_{idle}$的时间。一个chrip中发射信号的频率 $F_{t}$ 如下所示。
+LFMCW雷达发射信号在一个时长为 $T_{chirp}$ 的chirp内线性调频，两个chirp之间会间隔 $T_{idle}$的时间。一个chirp中发射信号的频率 $F_{t}$ 如下所示。
 
 $$
 F_{t}(t) = \begin{cases}
-   f_{c} + \frac{B}{T_{chrip}}t  &, t<T_{chrip} \\
-   f_{c}  &, t>T_{chrip}
+   f_{c} + \frac{B}{T_{chirp}}t  &, t<T_{chirp} \\
+   f_{c}  &, t>T_{chirp}
 \end{cases}
 $$
 
 其中  $f_{c}$ 为发射信号载波的频率， $B$ 为调制带宽。
 
-依次得到发射信号的相位及其波形如下(只关注chrip的波形，忽略 $T_{idle}$ 中的部分 )：
+依次得到发射信号的相位及其波形如下(只关注chirp的波形，忽略 $T_{idle}$ 中的部分 )：
 
 $$
-Ph_{t}(t) =2\pi( f_{c} t + \frac{B}{2 T_{chrip}}t^{2})
+Ph_{t}(t) =2\pi( f_{c} t + \frac{B}{2 T_{chirp}}t^{2})
 $$
 
 $$
-S_{t}(t) = e^{-j2\pi(f_{c} t + \frac{B}{2 T_{chrip}}t^{2})}
+S_{t}(t) = e^{-j2\pi(f_{c} t + \frac{B}{2 T_{chirp}}t^{2})}
 $$
 
 根据以上内容编写一个计算发射信号相位的函数如下：
 
 ``` matlab
 % 计算发射信号的相位
-function signal = clac_Phase_tx(axis_t, fc, T_chrip, T_idle, slope)
-    t = mod(axis_t, T_chrip + T_idle);
+function signal = clac_Phase_tx(axis_t, fc, T_chirp, T_idle, slope)
+    t = mod(axis_t, T_chirp + T_idle);
     signal = zeros(size(t));
-    signal(t < T_chrip) = 2 * pi * (t(t < T_chrip) .* (fc + 0.5 * slope * t(t < T_chrip)));
-    signal(t >= T_chrip) = 2 * pi * fc .* t(t >= T_chrip);
+    signal(t < T_chirp) = 2 * pi * (t(t < T_chirp) .* (fc + 0.5 * slope * t(t < T_chirp)));
+    signal(t >= T_chirp) = 2 * pi * fc .* t(t >= T_chirp);
 end
 ```
 
@@ -121,11 +121,11 @@ target_info = {[20, 10, 0, 10, 5, 0], [40, -20, 0, -20, 10, 0]};
     targets_phase = cell(numTx, numRx);
     for i = 1:numTx
         for j = 1:numRx
-            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chrip, T_idle, f_slope);
+            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chirp, T_idle, f_slope);
 
         end
     end
-    tx_phase = clac_Phase_tx(axis_t, Fc, T_chrip, T_idle, f_slope);
+    tx_phase = clac_Phase_tx(axis_t, Fc, T_chirp, T_idle, f_slope);
 
     % 计算每个通道的接收信号
     channel_signal = cell(numTx, numRx);
@@ -155,13 +155,13 @@ target_info = {[20, 10, 0, 10, 5, 0], [40, -20, 0, -20, 10, 0]};
   <summary>点击展开 (貌似代码块多了后网页会很卡,所以收起来了)</summary>
 
 ``` matlab
-function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info)
+function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info)
     % lfmcw_signal_generator  生成MIMO阵列接收信号混频后的中频信号
     % argument：
     %
     %  Fc     载波频率 (Hz)
     %  BW     带宽 (Hz)
-    %  T_chrip   chirp持续时间 (s)
+    %  T_chirp   chirp持续时间 (s)
     %  T_idle  两个chirp之间的间隔时间 (s)
     %  axis_t  时间轴 (s)
     %  tx_pos  发射天线的位置,行数为3的二维矩阵，一列代表一个天线的位置 (xyz坐标)
@@ -182,13 +182,13 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     %   Example:
     %       BW = 250e6; %带宽
     %       Fc = 24e9; % 载波频率
-    %       T_chrip = 420e-6; %  chirp 持续时间
+    %       T_chirp = 420e-6; %  chirp 持续时间
     %       T_idle = 580e-6; % 两个chirp之间的间隔时间
-    %       axis_t = 0:1/2.5e6:(T_chrip + T_idle) * 16; % 时间轴
+    %       axis_t = 0:1/2.5e6:(T_chirp + T_idle) * 16; % 时间轴
     %       target_info = {[20, 10, 0, 10, 5, 0], [40, -20, 0, -20, 10, 0]};
     %       tx_pos = {[0, 1, 1], [0, 3, 1]};
     %       rx_pos = {[0, 0, 0], [0, 1, 0], [0, 2, 0]};
-    %       [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info);
+    %       [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info);
     %       figure(1)
     %       subplot(211);
     %       plot(real(ref_signal(1, :)));
@@ -197,7 +197,7 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     arguments
         Fc double
         BW double
-        T_chrip double
+        T_chirp double
         T_idle double
         axis_t (1, :) double
         tx_pos (3, :) double
@@ -206,7 +206,7 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     end
     % 参数计算
     c = physconst('LightSpeed'); %光速
-    f_slope = BW / T_chrip; %调频斜率
+    f_slope = BW / T_chirp; %调频斜率
 
     numTx = size(tx_pos, 2);
     numRx = size(rx_pos, 2);
@@ -235,11 +235,11 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     targets_phase = cell(numTx, numRx);
     for i = 1:numTx
         for j = 1:numRx
-            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chrip, T_idle, f_slope);
+            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chirp, T_idle, f_slope);
 
         end
     end
-    tx_phase = clac_Phase_tx(axis_t, Fc, T_chrip, T_idle, f_slope);
+    tx_phase = clac_Phase_tx(axis_t, Fc, T_chirp, T_idle, f_slope);
 
     % 计算每个通道的接收信号
     channel_signal = cell(numTx, numRx);
@@ -253,11 +253,11 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
 end
 
 %% 计算相位函数
-function signal = clac_Phase_tx(axis_t, fc, T_chrip, T_idle, slope)
-    t = mod(axis_t, T_chrip + T_idle);
+function signal = clac_Phase_tx(axis_t, fc, T_chirp, T_idle, slope)
+    t = mod(axis_t, T_chirp + T_idle);
     signal = zeros(size(t));
-    signal(t < T_chrip) = 2 * pi * (t(t < T_chrip) .* (fc + 0.5 * slope * t(t < T_chrip)));
-    signal(t >= T_chrip) = 2 * pi * fc .* t(t >= T_chrip);
+    signal(t < T_chirp) = 2 * pi * (t(t < T_chirp) .* (fc + 0.5 * slope * t(t < T_chirp)));
+    signal(t >= T_chirp) = 2 * pi * fc .* t(t >= T_chirp);
 end
 
 ```
@@ -273,13 +273,13 @@ end
 clear; clc; close all
 BW = 250e6; %带宽
 Fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 580e-6; % 两个chirp之间的间隔时间
 Fs = 2.5e6;
-numADC = 256; % # ADC采样点数/chrip
-numChirps = 2; % # chrip/frame
+numADC = 256; % # ADC采样点数/chirp
+numChirps = 2; % # chirp/frame
 numCPI = 1; % frame数量
-axis_t = 0:1 / Fs:(T_chrip + T_idle) * numCPI * numChirps; % 时间轴
+axis_t = 0:1 / Fs:(T_chirp + T_idle) * numCPI * numChirps; % 时间轴
 lambda = physconst('LightSpeed') / Fc;
 d_rx = lambda / 2; % 接收天线之间的距离，单位米
 d_tx = 4 * d_rx; % 发射天线之间的距离，单位米
@@ -295,7 +295,7 @@ tx_pos = [zeros(1, numTx); linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 1); zero
 % 接受天线的位置
 rx_pos = [zeros(1, numRx); linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1); zeros(1, numRx)];
 
-[channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info);
+[channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info);
 
 %% 绘制时域波形图
 
@@ -334,26 +334,26 @@ title('通道1混频信号');
   
 
 ```matlab
-function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_chrip, T_idle, T_nop, freq_sampling, numSampling, numChrip, numFrame, tx_pos, rx_pos, target_info)
+function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_chirp, T_idle, T_nop, freq_sampling, numSampling, numChirp, numFrame, tx_pos, rx_pos, target_info)
     %
     % 生成MIMO雷达数据立方体，模拟中频信号经过混频后的接收信号
     %
     % 输入参数：
     %   Fc: 载波频率 (Hz)
     %   BW: 带宽 (Hz)
-    %   T_chrip: chirp持续时间 (s)
+    %   T_chirp: chirp持续时间 (s)
     %   T_idle: 两个chirp之间的间隔时间 (s)
     %   T_nop: 空闲时间 (s)
     %   freq_sampling: 采样频率 (Hz)
     %   numSampling: chirp内采样点数
-    %   numChrip: chirp序列数量
+    %   numChirp: chirp序列数量
     %   numFrame: 帧数
     %   tx_pos: 发射天线位置 (3xnumTx矩阵，xyz坐标)
     %   rx_pos: 接收天线位置 (3xnumRx矩阵，xyz坐标)
     %   target_info: 目标信息 (6xn矩阵，每行表示一个目标的初始位置和速度)
     %
     % 输出参数：
-    %   radar_data_cube: 数据立方体 (numFrame x numRx*numTx x numChrip x numSampling)
+    %   radar_data_cube: 数据立方体 (numFrame x numRx*numTx x numChirp x numSampling)
     %   res_range: 距离分辨率 (m)
     %   res_velocity: 速度分辨率 (m/s)
     %
@@ -366,11 +366,11 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
     % EXAMPLE:
     %   bandWidth = 250e6; %带宽
     %   fc = 24e9; % 载波频率
-    %   T_chrip = 420e-6; %  chirp 持续时间
+    %   T_chirp = 420e-6; %  chirp 持续时间
     %   T_idle = 580e-6; % 两个chirp之间的间隔时间
     %   Fs = 6e5;
-    %   numSampling = 256; % # ADC采样点数/chrip
-    %   numChrip = 32; % # chrip/frame
+    %   numSampling = 256; % # ADC采样点数/chirp
+    %   numChirp = 32; % # chirp/frame
     %   numFrame = 16; % frame数量
     %   numTx = 1; % 发射天线数量
     %   numRx = 8; % 接收天线数量
@@ -383,17 +383,17 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
     %   tx_pos = [zeros(1, numTx); linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 1); zeros(1, numTx)];
     %   % 接受天线的位置
     %   rx_pos = [zeros(1, numRx); linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1); zeros(1, numRx)];
-    %   radar_data_cube = lfmcw_radar_data_cube_generator(fc, bandWidth, T_chrip, T_idle, 0.4, Fs , numSampling, numChrip, numFrame, tx_pos, rx_pos, target_info);
+    %   radar_data_cube = lfmcw_radar_data_cube_generator(fc, bandWidth, T_chirp, T_idle, 0.4, Fs , numSampling, numChirp, numFrame, tx_pos, rx_pos, target_info);
 
     arguments
         freq_carry double
         bandwidth double
-        T_chrip double
+        T_chirp double
         T_idle double
         T_nop double
         freq_sampling double
         numSampling double
-        numChrip double
+        numChirp double
         numFrame double
         tx_pos (3, :) double
         rx_pos (3, :) double
@@ -402,21 +402,21 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
 
     % 参数计算
     c = physconst('LightSpeed'); %光速
-    f_slope = bandwidth / T_chrip; %调频斜率
+    f_slope = bandwidth / T_chirp; %调频斜率
 
     numTx = size(tx_pos, 2);
     numRx = size(rx_pos, 2);
     numTargets = size(target_info, 2);
 
-    t = T_chrip - (numSampling - 1) / freq_sampling;
+    t = T_chirp - (numSampling - 1) / freq_sampling;
 
     if (t < 0)
-        error("chrip时长需要大于 (numSampling - 1) / freq_sampling")
+        error("chirp时长需要大于 (numSampling - 1) / freq_sampling")
     end
     axis_4 = (0:numSampling - 1) ./ freq_sampling +t / 2;
-    axis_3 = (0:numChrip - 1) .* (T_chrip + T_idle);
-    axis_2 = (0:numFrame -1) .* (T_nop +numChrip * (T_chrip + T_idle));
-    axis_t = kron(axis_3, ones(1, numSampling)) + repmat(axis_4, 1, numChrip);
+    axis_3 = (0:numChirp - 1) .* (T_chirp + T_idle);
+    axis_2 = (0:numFrame -1) .* (T_nop +numChirp * (T_chirp + T_idle));
+    axis_t = kron(axis_3, ones(1, numSampling)) + repmat(axis_4, 1, numChirp);
     axis_t = kron(axis_2, ones(size(axis_t))) + repmat(axis_t, 1, numFrame);
 
     % 计算不同时间的目标位置信息
@@ -441,11 +441,11 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
     targets_phase = zeros([numRx * numTx, numTargets, size(axis_t, 2)]);
     for i = 1:numTx
         for j = 1:numRx
-            targets_phase((i - 1) * numRx + j, :, :) = clac_Phase_tx(repmat(axis_t, numTargets, 1) - squeeze(targets_delay((i - 1) * numRx + j, :, :)), freq_carry, T_chrip, T_idle, T_nop, numChrip, f_slope);
+            targets_phase((i - 1) * numRx + j, :, :) = clac_Phase_tx(repmat(axis_t, numTargets, 1) - squeeze(targets_delay((i - 1) * numRx + j, :, :)), freq_carry, T_chirp, T_idle, T_nop, numChirp, f_slope);
 
         end
     end
-    tx_phase = clac_Phase_tx(axis_t, freq_carry, T_chrip, T_idle, T_nop, numChrip, f_slope);
+    tx_phase = clac_Phase_tx(axis_t, freq_carry, T_chirp, T_idle, T_nop, numChirp, f_slope);
 
     % 计算每个通道的接收信号
     channel_signal = zeros([size(axis_t, 2), numRx * numTx]);
@@ -456,11 +456,11 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
     end
     % ref_signal = exp(1j * (targets_phase(1, 1, :, :) - tx_phase));
 
-    radar_data_cube = reshape(channel_signal, [numSampling, numChrip, numFrame, numRx * numTx]);
+    radar_data_cube = reshape(channel_signal, [numSampling, numChirp, numFrame, numRx * numTx]);
     radar_data_cube = permute(radar_data_cube, [3, 4, 2, 1]);
     useful_bandwidth = (numSampling - 1) / freq_sampling * f_slope;
     res_range = c / (2 * useful_bandwidth);
-    res_velocity = physconst('LightSpeed') / (2 * freq_carry * (T_chrip + T_idle) * numChrip);
+    res_velocity = physconst('LightSpeed') / (2 * freq_carry * (T_chirp + T_idle) * numChirp);
     % 确定输出的数量
     nargoutchk(0, 3); % 检查输出参数的数量，最多支持3个
 
@@ -482,9 +482,9 @@ function varargout = lfmcw_radar_data_cube_generator(freq_carry, bandwidth, T_ch
 end
 
 %% 计算相位函数
-function signal = clac_Phase_tx(axis_t, fc, T_chrip, T_idle, T_nop, numChrip, slope)
-    t = mod(axis_t, (T_chrip + T_idle) * numChrip + T_nop);
-    t = mod(t, T_chrip + T_idle);
+function signal = clac_Phase_tx(axis_t, fc, T_chirp, T_idle, T_nop, numChirp, slope)
+    t = mod(axis_t, (T_chirp + T_idle) * numChirp + T_nop);
+    t = mod(t, T_chirp + T_idle);
     signal = 2 * pi * (t .* (fc + 0.5 * slope * t));
 end
 ```
@@ -511,23 +511,23 @@ end
 clear; clc; close all
 bandWidth = 250e6; %带宽
 fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 580e-6; % 两个chirp之间的间隔时间
 T_nop = 0.4;
 Fs = 2.5e6;
 SNR = 10; % 噪声信号比
 
-numADC = 256; % # ADC采样点数/chrip
-numChirps = 32; % # chrip/frame
+numADC = 256; % # ADC采样点数/chirp
+numChirps = 32; % # chirp/frame
 numCPI = 30; % frame数量
 numTx = 1; % 发射天线数量
 numRx = 8; % 接收天线数量
 numChannel = numTx * numRx;
 
-max_range = 255 * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chrip);
-max_velocity = (numChirps - 1) * physconst('LightSpeed') / (2 * fc * (T_chrip + T_idle) * numChirps);
-axis_t = 0:1 / Fs:(T_chrip + T_idle) * numCPI * numChirps; % 时间轴
-axis_range = (255:-1:0) * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chrip); %输入信号混频后是负频率，因此坐标轴反向
+max_range = 255 * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chirp);
+max_velocity = (numChirps - 1) * physconst('LightSpeed') / (2 * fc * (T_chirp + T_idle) * numChirps);
+axis_t = 0:1 / Fs:(T_chirp + T_idle) * numCPI * numChirps; % 时间轴
+axis_range = (255:-1:0) * physconst('LightSpeed') / 2 / (bandWidth * numADC * (1 / Fs) * 4 / T_chirp); %输入信号混频后是负频率，因此坐标轴反向
 axis_velocity = (floor(numChirps / 2):-1: - floor(numChirps / 2) + 1) / (numChirps - 1) * max_velocity;
 axis_angle = (-90:1:90);
 
@@ -544,7 +544,7 @@ tx_pos = [zeros(1, numTx); linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 1); zero
 % 接受天线的位置
 rx_pos = [zeros(1, numRx); linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1); zeros(1, numRx)];
 
-radar_data_cube = lfmcw_radar_data_cube_generator(fc, bandWidth, T_chrip, T_idle, T_nop, Fs / 4, numADC, numChirps, numCPI, tx_pos, rx_pos, target_info);
+radar_data_cube = lfmcw_radar_data_cube_generator(fc, bandWidth, T_chirp, T_idle, T_nop, Fs / 4, numADC, numChirps, numCPI, tx_pos, rx_pos, target_info);
 
 %% 添加噪声
 k = mean(abs(radar_data_cube), 'all') / (10 ^ (SNR / 20));
@@ -571,7 +571,7 @@ steering_vectors = steering_vector(rx_pos, [axis_angle; zeros(size(axis_angle))]
 
 %% 取出一帧数据
 frame = squeeze(radar_data_cube(1, :, :, :));
-x = squeeze(mean(frame(:, 1:1, :), 2)); %累计不同chrip的信号（高速运动的目标累积可能会带来角度模糊）
+x = squeeze(mean(frame(:, 1:1, :), 2)); %累计不同chirp的信号（高速运动的目标累积可能会带来角度模糊）
 x = x - mean(x, 2); % 减去均值
 Cxx = x * x';
 %% Capon算法测角——matlab工具箱 phased.MVDRBeamformer
@@ -702,7 +702,7 @@ for f = 1:numCPI
     colorbar;
     xlabel('X');
     ylabel('Y');
-    title(['Time ', num2str((f-1)*((T_chrip+T_idle)*numChirps+T_nop))]);
+    title(['Time ', num2str((f-1)*((T_chirp+T_idle)*numChirps+T_nop))]);
     clim(caxis_range); % 设置颜色范围
     drawnow;
     

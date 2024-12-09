@@ -14,8 +14,8 @@ from joblib import Parallel, delayed
 """1. 加载数据，设置一些雷达参数"""
 data = scipy.io.loadmat("../data/RadarData_2024_05_31_09_34_52.mat")
 radarDataCube = scipy.fft.ifft(data["frames"], axis=3)
-numFrame, numChannel, numChrip, numSampling = radarDataCube.shape
-print(f"帧数    \t{numFrame}\n通道数\t{numChannel}\nchrip数\t{numChrip}\n采样点数\t{numSampling}")
+numFrame, numChannel, numChirp, numSampling = radarDataCube.shape
+print(f"帧数    \t{numFrame}\n通道数\t{numChannel}\nchirp数\t{numChirp}\n采样点数\t{numSampling}")
 
 from scipy.constants import speed_of_light as c
 from steering_vector import steering_vector
@@ -49,12 +49,12 @@ tx_pos = np.array([[0] * numTx, np.linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 
 rx_pos = np.array([[0] * numRx, np.linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1), [0] * numRx])
 
 
-max_velocity = (numChrip - 1) * c / (2 * fc * (T_chirp + T_idle) * numChrip)
-axis_t = np.arange(0, (T_chirp + T_idle) * numFrame * numChrip + 1 / Fs, 1 / Fs)  # 时间轴
+max_velocity = (numChirp - 1) * c / (2 * fc * (T_chirp + T_idle) * numChirp)
+axis_t = np.arange(0, (T_chirp + T_idle) * numFrame * numChirp + 1 / Fs, 1 / Fs)  # 时间轴
 axis_range = np.arange(numSampling) * c / 2 / (bandwidth * numSampling * (1 / Fs) / T_chirp)  # 输入信号混频后是负频率，因此坐标轴反向
-axis_velocity = -1 * (np.arange(-np.floor(numChrip / 2), -np.floor(numChrip / 2) + 1)) / (numChrip - 1) * max_velocity
+axis_velocity = -1 * (np.arange(-np.floor(numChirp / 2), -np.floor(numChirp / 2) + 1)) / (numChirp - 1) * max_velocity
 axis_angle = np.arange(-90, 91)  # 角度范围
-T_frame = (T_chirp + T_idle) * numChrip + T_nop
+T_frame = (T_chirp + T_idle) * numChirp + T_nop
 
 
 # %%

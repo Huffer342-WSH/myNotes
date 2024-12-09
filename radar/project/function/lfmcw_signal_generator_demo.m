@@ -1,13 +1,13 @@
 clear; clc; close all
 BW = 250e6; %带宽
 Fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 580e-6; % 两个chirp之间的间隔时间
 Fs = 2.5e6;
-numADC = 256; % # ADC采样点数/chrip
-numChirps = 2; % # chrip/frame
+numADC = 256; % # ADC采样点数/chirp
+numChirps = 2; % # chirp/frame
 numCPI = 1; % frame数量
-axis_t = 0:1 / Fs:(T_chrip + T_idle) * numCPI * numChirps; % 时间轴
+axis_t = 0:1 / Fs:(T_chirp + T_idle) * numCPI * numChirps; % 时间轴
 lambda = physconst('LightSpeed') / Fc;
 d_rx = lambda / 2; % 接收天线之间的距离，单位米
 d_tx = 4 * d_rx; % 发射天线之间的距离，单位米
@@ -23,7 +23,7 @@ tx_pos = [zeros(1, numTx); linspace(-0.5, 0.5, numTx) * d_tx * (numTx - 1); zero
 % 接受天线的位置
 rx_pos = [zeros(1, numRx); linspace(-0.5, 0.5, numRx) * d_rx * (numRx - 1); zeros(1, numRx)];
 
-[channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info);
+[channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info);
 
 %% 绘制时域波形图
 

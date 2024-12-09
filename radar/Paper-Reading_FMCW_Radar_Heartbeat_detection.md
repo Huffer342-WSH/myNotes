@@ -54,19 +54,19 @@ $$
 
 $$
 \begin{align}
-    \Phi_{t}(t) &= 2\pi(f_{c} t + \frac{B}{2 T_{chrip}}t^{2}) \\
-    \Phi_{r}(t) &= 2\pi(\Phi_{t}(t-\tau) = f_{c} (t-\tau) + \frac{B}{2 T_{chrip}}(t-\tau)^{2}) \\
-    \Phi_{mix}(t) &= \Phi_{t}(t) - \Phi_{r}(t)  = 2\pi(f_{c} \tau  + \frac{B}{2 T_{chrip}}(2t\tau-\tau^{2})) \\
+    \Phi_{t}(t) &= 2\pi(f_{c} t + \frac{B}{2 T_{chirp}}t^{2}) \\
+    \Phi_{r}(t) &= 2\pi(\Phi_{t}(t-\tau) = f_{c} (t-\tau) + \frac{B}{2 T_{chirp}}(t-\tau)^{2}) \\
+    \Phi_{mix}(t) &= \Phi_{t}(t) - \Phi_{r}(t)  = 2\pi(f_{c} \tau  + \frac{B}{2 T_{chirp}}(2t\tau-\tau^{2})) \\
 \end{align}                                            
 $$
 
-其中 $\tau$ 是目标回波的延迟 $\tau=\frac{2d}{c}$，$B$ 是调频的带宽 $T_{chrip}$ 是Chrip的时长。 $t$ 的取值范围是 $[0,T_{chrip}]$
+其中 $\tau$ 是目标回波的延迟 $\tau=\frac{2d}{c}$，$B$ 是调频的带宽 $T_{chirp}$ 是Chirp的时长。 $t$ 的取值范围是 $[0,T_{chirp}]$
 
 那么两个不同位置的目标对应的中频信号的相位差 $\Phi_{\Delta}(t)$ 表达式如下：
 
 $$
 \begin{equation}
-    \Phi_{\Delta}(t) =2 \pi \{ f_{c} (\tau_{1}-\tau_{2}) + \frac{B}{2 T_{chrip}}[\tau_{1}^{2}-\tau_{2}^{2}+2(\tau_{2}-\tau_{1})t] \} 
+    \Phi_{\Delta}(t) =2 \pi \{ f_{c} (\tau_{1}-\tau_{2}) + \frac{B}{2 T_{chirp}}[\tau_{1}^{2}-\tau_{2}^{2}+2(\tau_{2}-\tau_{1})t] \} 
 \end{equation}
 $$
 
@@ -77,16 +77,16 @@ clear; clc; close all
 %% 参数
 bandWidth = 250e6; %带宽
 fc = 24e9; % 载波频率
-T_chrip = 420e-6; %  chirp 持续时间
+T_chirp = 420e-6; %  chirp 持续时间
 T_idle = 580e-6; % 两个chirp之间的间隔时间
 c = physconst('LightSpeed'); %光速
 lambda = c/fc;
 %% 频域相位差
 dis = [6;6+0.1*lambda];
 tau = dis*2/c;
-axis_t = linspace(0,T_chrip,128);
+axis_t = linspace(0,T_chirp,128);
 axis_range = (0:127)*c/(2*bandWidth);
-phi = 2*pi *(fc .* tau + (bandWidth/2/T_chrip)*(2*tau*axis_t-tau.^2));
+phi = 2*pi *(fc .* tau + (bandWidth/2/T_chirp)*(2*tau*axis_t-tau.^2));
 signal = exp(1j*phi);
 freq_domain = fft(signal,size(signal,2),2);
 figure;
@@ -129,7 +129,7 @@ subplot(313);plot(phi_diff,'DisplayName', "调频信号相位差");hold on;plot(
 
 > ![FMCW雷达系统中可以采用的提取相位信息的方法。](./assets/Methods_that_can_be_used_to_extract_phase_information_in_FMCW_radar_systems.png)
 
-对于FMCW雷达来说，一般再Range-FFT后的频域获取相位信息。时域采集到的数据用 $x$ 表示, $x$ 是一个 $N_{0} \times N_{c}$ 的数组，$N_{0}$ 是每个chrip的采样点数，$N_{c}$ chrip总数。
+对于FMCW雷达来说，一般再Range-FFT后的频域获取相位信息。时域采集到的数据用 $x$ 表示, $x$ 是一个 $N_{0} \times N_{c}$ 的数组，$N_{0}$ 是每个chirp的采样点数，$N_{c}$ chirp总数。
 时域数据沿着快时间维度FFT（Range-FFT）的得到复数矩阵 $\boldsymbol{\mathrm{X}}$ :
 
 $$
@@ -191,7 +191,7 @@ $$
 
 DACM还是是一种适合电路设计的算法，因为它不使用反正切函数而是使用反正切函数的微分性质计算两个采样点的相位差。基础版本的公式推导如下：
 
-记 $X(n)$ 为采样点序列， 再毫米波雷达应用中 $X(n)$ 每一个chrip分别傅里叶变换到频域后，取同一个位置的点排列组成的。$X_{R}(n)$ 为实部，$X_{I}(n)$ 为虚部。每个点相位计算的方法如下：
+记 $X(n)$ 为采样点序列， 再毫米波雷达应用中 $X(n)$ 每一个chirp分别傅里叶变换到频域后，取同一个位置的点排列组成的。$X_{R}(n)$ 为实部，$X_{I}(n)$ 为虚部。每个点相位计算的方法如下：
 
 $$
 \begin{align}
@@ -284,7 +284,7 @@ subplot(313); hold on; plot(t, unwrap_phase1, "DisplayName", "普通方法"); pl
 
 ![相位解缠绕测试结果](./assets/demo_phase_unwrap.png)
 
-DACM作为一种利用差分近似微分的算法，采样频率越高精度越高。鉴于心跳和呼吸的速度都比较慢，选取chrip周期的时候一般都会满足测量人体行走所需的采样频率，DACM的精度应该是足够的。
+DACM作为一种利用差分近似微分的算法，采样频率越高精度越高。鉴于心跳和呼吸的速度都比较慢，选取chirp周期的时候一般都会满足测量人体行走所需的采样频率，DACM的精度应该是足够的。
 
 
 ## 生命体征提取

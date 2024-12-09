@@ -1,10 +1,10 @@
-function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info)
+function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info)
     % lfmcw_signal_generator  生成MIMO阵列接收信号混频后的中频信号
     % argument：
     %
     %  Fc     载波频率 (Hz)
     %  BW     带宽 (Hz)
-    %  T_chrip   chirp持续时间 (s)
+    %  T_chirp   chirp持续时间 (s)
     %  T_idle  两个chirp之间的间隔时间 (s)
     %  axis_t  时间轴 (s)
     %  tx_pos  发射天线的位置,行数为3的二维矩阵，一列代表一个天线的位置 (xyz坐标)
@@ -25,13 +25,13 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     %   Example:
     %       BW = 250e6; %带宽
     %       Fc = 24e9; % 载波频率
-    %       T_chrip = 420e-6; %  chirp 持续时间
+    %       T_chirp = 420e-6; %  chirp 持续时间
     %       T_idle = 580e-6; % 两个chirp之间的间隔时间
-    %       axis_t = 0:1/2.5e6:(T_chrip + T_idle) * 16; % 时间轴
+    %       axis_t = 0:1/2.5e6:(T_chirp + T_idle) * 16; % 时间轴
     %       target_info = {[20, 10, 0, 10, 5, 0], [40, -20, 0, -20, 10, 0]};
     %       tx_pos = {[0, 1, 1], [0, 3, 1]};
     %       rx_pos = {[0, 0, 0], [0, 1, 0], [0, 2, 0]};
-    %       [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, T_idle, axis_t, tx_pos, rx_pos, target_info);
+    %       [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chirp, T_idle, axis_t, tx_pos, rx_pos, target_info);
     %       figure(1)
     %       subplot(211);
     %       plot(real(ref_signal(1, :)));
@@ -40,7 +40,7 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     arguments
         Fc double
         BW double
-        T_chrip double
+        T_chirp double
         T_idle double
         axis_t (1, :) double
         tx_pos (3, :) double
@@ -49,7 +49,7 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     end
     % 参数计算
     c = physconst('LightSpeed'); %光速
-    f_slope = BW / T_chrip; %调频斜率
+    f_slope = BW / T_chirp; %调频斜率
 
     numTx = size(tx_pos, 2);
     numRx = size(rx_pos, 2);
@@ -78,11 +78,11 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
     targets_phase = cell(numTx, numRx);
     for i = 1:numTx
         for j = 1:numRx
-            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chrip, T_idle, f_slope);
+            targets_phase{i, j} = clac_Phase_tx(repmat(axis_t, numTargets, 1) - targets_delay{i, j}, Fc, T_chirp, T_idle, f_slope);
 
         end
     end
-    tx_phase = clac_Phase_tx(axis_t, Fc, T_chrip, T_idle, f_slope);
+    tx_phase = clac_Phase_tx(axis_t, Fc, T_chirp, T_idle, f_slope);
 
     % 计算每个通道的接收信号
     channel_signal = cell(numTx, numRx);
@@ -96,9 +96,9 @@ function [channel_signal, ref_signal] = lfmcw_signal_generator(Fc, BW, T_chrip, 
 end
 
 %% 计算相位函数
-function signal = clac_Phase_tx(axis_t, fc, T_chrip, T_idle, slope)
-    t = mod(axis_t, T_chrip + T_idle);
+function signal = clac_Phase_tx(axis_t, fc, T_chirp, T_idle, slope)
+    t = mod(axis_t, T_chirp + T_idle);
     signal = zeros(size(t));
-    signal(t < T_chrip) = 2 * pi * (t(t < T_chrip) .* (fc + 0.5 * slope * t(t < T_chrip)));
-    signal(t >= T_chrip) = 2 * pi * fc .* t(t >= T_chrip);
+    signal(t < T_chirp) = 2 * pi * (t(t < T_chirp) .* (fc + 0.5 * slope * t(t < T_chirp)));
+    signal(t >= T_chirp) = 2 * pi * fc .* t(t >= T_chirp);
 end

@@ -2,7 +2,7 @@
 layout: post
 title: 解决CMake在使用MSVC时构建打印大量包含信息的问题
 date: 2024-10-28 16:58:40
-categories: []
+categories: [教程]
 excerpt: 
 hide: false
 ---

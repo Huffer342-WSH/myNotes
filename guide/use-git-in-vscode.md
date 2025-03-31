@@ -3,7 +3,7 @@ layout: post
 title: 在VSCode中使用Git管理项目
 date: 2024-06-29 18:10:00
 excerpt_type: html
-categories: [编程工具]
+categories: [教程]
 ---
 
 最近大量的代码都是用vscode写的，不管是单片机还是FPGA或者是matlab，虽然各自有各自的IDE，但是写代码还是VSCode好用。

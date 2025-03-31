@@ -2,7 +2,7 @@
 layout: post
 title: linux内核头文件概览
 date: 2025-03-14 16:11:37
-categories: [linux]
+categories: [Linux]
 excerpt: 
 hide: false
 ---

@@ -2,6 +2,7 @@
 layout: post
 title: WSL2中安装Vivado
 date: 2024-09-10 14:44:00
+categories: [教程]
 excerpt: 记录一在WSL2中安装Vivado
 ---
 

@@ -2,7 +2,7 @@
 layout: post
 title: 设备树语法概览
 date: 2025-03-20 17:06:33
-categories: [linux]
+categories: [Linux]
 excerpt: 
 hide: false
 ---

@@ -2,6 +2,7 @@
 layout: post
 title: WSL2中安装Cuda和Pytorch
 date: 2024-08-31 21:55:00
+categories: [教程]
 excerpt: 记录一下怎么在WSL2中安装的Cuda+cudnn和conda+pytorch
 ---
 

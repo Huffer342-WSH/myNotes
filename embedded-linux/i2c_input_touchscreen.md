@@ -20,45 +20,46 @@ FT5426是一款支持TypeB类型多点触控的电容式触摸控制器
   - 轮询模式： 存在触摸时持续拉低。
   - 触发模式： 持续按下时，在完成有效数据传输后会再次产生中断脉冲；中断频率由数据读取频率决定。
 
-## 驱动设计
+## 驱动程序设计
 
 触摸屏事件的触发流程为：
+**触摸 -> 触发INT -> 进入中断 -> I2C读取数据：*i2c_transfer()* -> 汇报事件*input_event()* -> 退出中断**
 
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+我们需要编写的代码大致如下：
+
+- probe
+  + 复位FT5426
+  + 初始化FT5426
+  + 注册中断服务函数(isr)
+  + 注册input设备
+- remove
+  + 注销input设备
+  + >使用`devm_`注册的设备不需要手动注销
+- isr
+  + 读取FT5426寄存器
+  + 汇报事件
+
+## 设备树
+
+若`ft5426`挂载在`i2c1`总线下，则在`i2c1`下创建节点
+
+```dts
+&i2c1 {
+	clock-frequency = <100000>;
+	edt-ft5x06@38 {
+		compatible = "edt,edt-ft5426";
+		reg = <0x38>;
+
+		interrupt-parent = <&gpio0>;
+		interrupts = <60 0x2>;
+
+		reset-gpio = <&gpio0 59 GPIO_ACTIVE_LOW>;
+		interrupt-gpio = <&gpio0 60 GPIO_ACTIVE_LOW>;
+	};
+};
 ```
 
-````txt
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-```
-````
-
-> **触摸 -> 触发INT -> 进入中断 -> I2C读取数据：*i2c_transfer()* -> 汇报事件*input_event()* -> 退出中断**
-
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
-```
-
-```mermaid
-graph TD;
-    A[触摸事件发生] --> B{触发INT中断信号};
-    B --> C[进入中断服务程序];
-    C --> D[调用i2c_transfer读取数据];
-    D --> E[解析坐标数据];
-    E --> F[上报input_event事件];
-    F --> G[清除INT状态标志];
-    G --> H[退出中断];
-```
+- `compatible = "edt,edt-ft5426"`: 匹配驱动
+- `reg = <0x38>`：指定I2C设备的从机地址（7位或10位地址）
+- `interrupts = <60 0x2>`：中断号
+- `reset-gpio = <&gpio0 59 GPIO_ACTIVE_LOW>`：复位引脚

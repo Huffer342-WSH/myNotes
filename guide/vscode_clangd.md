@@ -21,6 +21,40 @@ hide: false
 
 ![C_Cpp.intelliSenseEngine](./assets/vscode_clangd/C_Cpp.intelliSenseEngine.png)
 
+### 使用优化的clangd
+
+[Doxygen parsing missing #529](https://github.com/clangd/clangd/issues/529)
+
+当前版本的clangd对doxygen没有渲染，在tcottin的fork[tcottin/llvm-project:rearrange-hover](https://github.com/tcottin/llvm-project/tree/rearrange-hover)上新增了该功能，并已经开始pr流程了
+
+可以先拉取他的branch编译一个clangd，下载并编译：
+```sh
+git clone https://github.com/tcottin/llvm-project.git --depth=1 --branch=rearrange-hover
+cd llvm-project
+mkdir build
+cmake -S ./llvm -B ./build -DCMAKE_BUILD_TYPE=Release -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra" -DCMAKE_INSTALL_PREFIX=/path/to/your/install_dir
+cmake --build ./build --target clangd -j
+cmake --build ./build --target check-clangd -j #测试（可选）
+sudo cmake --install ./build --component clangd
+```
+
+修改VSCode中的路径设置[clangd.path](vscode://settings/clangd.path)
+
+<div style="display: flex; justify-content: space-around; align-items: center; gap: 10px; flex-wrap: wrap;">
+  <div style="flex: 1 1 10px; text-align: center;">
+    <img src="./assets/vscode_clangd/clangd-opt.png" alt="clangd-opt" style="max-width: 100%; height: auto;">
+    <p><strong>clangd-opt</strong></p>
+  </div>
+  <div style="flex: 1 1 10px; text-align: center;">
+    <img src="./assets/vscode_clangd/clangd.png" alt="clangd" style="max-width: 100%; height: auto;">
+    <p><strong>clangd</strong></p>
+  </div>
+  <div style="flex: 1 1 10px; text-align: center;">
+    <img src="./assets/vscode_clangd/c_cpp.png" alt="c_cpp" style="max-width: 100%; height: auto;">
+    <p><strong>c_cpp</strong></p>
+  </div>
+</div>
+
 ## 2. 生成`compile_commands.json`文件
 
 [官网文档](https://clangd.llvm.org/design/compile-commands)

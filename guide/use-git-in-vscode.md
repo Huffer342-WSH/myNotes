@@ -33,6 +33,7 @@ vscode中的GitLens拓展给VSCode增加了很多Git操作，该文主要记录�
 
 ### 2.1 设置网络代理
 
+#### http/https
 ```shell
 git config --global http.proxy http://username:password@proxy.server:port
 git config --global https.proxy https://username:password@proxy.server:port
@@ -43,6 +44,27 @@ git config --global https.proxy https://username:password@proxy.server:port
 ```shell
 git config --global http.proxy http://127.0.0.1:7890
 git config --global https.proxy https://127.0.0.1:7890
+```
+#### ssh
+
+1. Windows
+`C:\Users\${your username}\.ssh\config`
+```
+Host github.com
+        Hostname ssh.github.com
+        Port 443
+        User git
+        ProxyCommand connect -S 127.0.0.1:7890 %h %p
+```
+
+2. Linux
+`~/.ssh/config`
+```
+Host github.com
+        Hostname ssh.github.com
+        Port 443
+        User git
+        ProxyCommand nc -v -x 172.28.208.1:7890 %h %p
 ```
 
 ### 2.2 设置用户名和密码
@@ -248,7 +270,7 @@ VScode会打开一个合并管理器，两个分支里二选一解决冲突，�
 用户B刚准备把这个合并到develop分支时，发现用户A很体贴的给他准备了一个新的`sum()`函数,可以直接输入两个列表并求和。那么用户B该怎么才能用上最新的功能呢？
 和之前合并分支一样有两种选择`merge`和`rebase`：
 + merge：用户B先更新develop分支，切换到feature/B分后`git merge develop`将develop的新提交合并到feature/B分支。
-+ rebase：用户B先更新develop分支， 
++ rebase：用户B先更新develop分支，
 
 ##### merge
 merge的过程和上文中的一样，下图是merge并提交了新的代码后的结果。

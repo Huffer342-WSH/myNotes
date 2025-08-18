@@ -4,7 +4,7 @@ title: 在Podman中安装chrome
 date: 2025-08-11 10:00:55
 categories: [教程]
 excerpt:
-hide: false
+hide: true
 ---
 
 

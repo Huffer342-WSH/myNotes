@@ -4,7 +4,7 @@ title: 使用ZSH
 date: 2025-08-05 15:19:56
 categories: [教程]
 excerpt:
-hide: false
+hide: true
 ---
 
 ## 安装

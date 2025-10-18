@@ -7,11 +7,10 @@ excerpt:
 hide: false
 ---
 
-## 一键[安装脚本](https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/f013ccf4048e1c65e5d93cb2b353b9196444dbd8/install-zsh.sh)
+## 一键[安装脚本](https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/install-zsh.sh)
 ```sh
-sh -c "$(wget -qO- https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/f013ccf4048e1c65e5d93cb2b353b9196444dbd8/install-zsh.sh)"
+sh -c "$(wget -qO- https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/install-zsh.sh)"
 ```
-
 
 ## 安装
 
@@ -50,7 +49,7 @@ PROMPT='%{$fg_bold[green]%} %~%{$reset_color%}$(git_prompt_info)$(virtualenv_
 ❯ '
 ```
 
-[下载地址](https://gist.githubusercontent.com/Huffer342-WSH/452c50b3172bf5857927e76626b5af06/raw/23449072063f6f6a72644c13e7267e6665f75ea1/my.zsh-theme)
+[下载地址](https://gist.githubusercontent.com/Huffer342-WSH/452c50b3172bf5857927e76626b5af06/raw/my.zsh-theme)
 
 ## 插件
 

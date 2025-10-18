@@ -32,24 +32,8 @@ chsh -s $(which zsh)
 ## 主题
 
 在 `{ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/`下添加自己的主题`my.zsh-theme`:
-```sh
-ZSH_THEME_GIT_PROMPT_PREFIX=" on %{$fg[magenta]%}"
-ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[red]%}!"
-ZSH_THEME_GIT_PROMPT_UNTRACKED="%{$fg[green]%}?"
-ZSH_THEME_GIT_PROMPT_CLEAN=""
 
-VIRTUAL_ENV_DISABLE_PROMPT=1
-ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX=" %{$fg[green]%}🐍 "
-ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_VIRTUALENV_PREFIX=$ZSH_THEME_VIRTUAL_ENV_PROMPT_PREFIX
-ZSH_THEME_VIRTUALENV_SUFFIX=$ZSH_THEME_VIRTUAL_ENV_PROMPT_SUFFIX
-
-PROMPT='%{$fg_bold[green]%} %~%{$reset_color%}$(git_prompt_info)$(virtualenv_prompt_info)
-❯ '
-```
-
-[下载地址](https://gist.githubusercontent.com/Huffer342-WSH/452c50b3172bf5857927e76626b5af06/raw/my.zsh-theme)
+<CodeBlockFromUrl url="https://gist.githubusercontent.com/Huffer342-WSH/452c50b3172bf5857927e76626b5af06/raw/my.zsh-theme" title="my.zsh-theme" />
 
 ## 插件
 

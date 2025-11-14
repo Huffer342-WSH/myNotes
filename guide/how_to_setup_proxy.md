@@ -27,16 +27,35 @@ npm config set https-proxy http://127.0.0.1:7890
 
 ### 换源
 
-可以选清华源、中科大源等
-- [中科大anaconda](https://mirrors.ustc.edu.cn/help/anaconda.html)
-- [清华anaconda](https://mirrors.tuna.tsinghua.edu.cn/help/anaconda/)
-- [中科大pip](https://mirrors.ustc.edu.cn/help/pypi.html)
-- [清华pip](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)
+可以选清华源、中科大源、浙大源等
 
-但是某校网被清华源拉黑了，所以用的腾讯源
+`.condarc`:
+```yaml
+show_channel_urls: true
+auto_activate: false
+default_channels:
+  - https://mirrors.zju.edu.cn/anaconda/pkgs/main
+  - https://mirrors.zju.edu.cn/anaconda/pkgs/r
+  - https://mirrors.zju.edu.cn/anaconda/pkgs/msys2
+custom_channels:
+  conda-forge: https://mirrors.zju.edu.cn/anaconda/cloud
+  msys2: https://mirrors.zju.edu.cn/anaconda/cloud
+  bioconda: https://mirrors.zju.edu.cn/anaconda/cloud
+  menpo: https://mirrors.zju.edu.cn/anaconda/cloud
+  pytorch: https://mirrors.zju.edu.cn/anaconda/cloud
+  pytorch-lts: https://mirrors.zju.edu.cn/anaconda/cloud
+  simpleitk: https://mirrors.zju.edu.cn/anaconda/cloud
+  nvidia: https://mirrors.zju.edu.cn/anaconda-r
+```
+
 
 ```sh
-pip config set global.index-url https://mirrors.cloud.tencent.com/pypi/simple
+pip config set global.index-url https://mirrors.zju.edu.cn/pypi/web/simple
+```
+
+`cuda版pytorch`
+```sh
+pip3 install torch torchvision -f https://mirrors.aliyun.com/pytorch-wheels/cu130
 ```
 
 ### 代理

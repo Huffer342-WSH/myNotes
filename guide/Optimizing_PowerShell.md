@@ -7,6 +7,18 @@ excerpt: PowerShell按键优化+美化
 ---
 PowerShell Prompt的美化方案可选[Oh-My-Posh](https://ohmyposh.dev/)和[Starship](https://Starship.rs/)， Starship速度比较快且功能够用了，所以下文一StarShip为例
 
+## -1. 一键安装脚本
+
+```powershell
+irm "https://gist.githubusercontent.com/Huffer342-WSH/46b478a4bcc3bd00a6bec263961f8290/raw/powershell_optimize.ps1" | iex
+```
+
+如果系统提示“禁止执行脚本”运行下面的指令：
+
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+```
+
 ## 0. 精简版
 
 1. 安装 `PSReadLine`,`posh-git`,`Starship`
@@ -24,26 +36,9 @@ PowerShell Prompt的美化方案可选[Oh-My-Posh](https://ohmyposh.dev/)和[Sta
    ```
 3. 在配置文件中输入一下内容
 
+    [最新链接](https://gist.githubusercontent.com/Huffer342-WSH/569958a7b27ea3414b3069b7ae278751/raw/powershell_profile.ps1)
    ```PowerShell
     [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-
-    # 单次加载conda
-    function Invoke-CondaInit {
-        if (-not $script:CondaAlreadyInitialized) {
-            Write-Host "Initializing Conda..." -ForegroundColor Yellow
-            If (Test-Path "E:\SDK\miniconda3\Scripts\conda.exe") {
-                (& "E:\SDK\miniconda3\Scripts\conda.exe" "shell.powershell" "hook") | Out-String | ?{$_} | Invoke-Expression
-            }
-            $script:CondaAlreadyInitialized = $true
-        }
-    }
-
-    # conda 指令替换
-    Set-Alias -Name conda -Value conda-wrapper
-    function conda-wrapper {
-        Invoke-CondaInit
-        conda @args
-    }
 
     # posh-git
     Import-Module posh-git
@@ -179,33 +174,12 @@ Invoke-Expression (&Starship init PowerShell)
 ```
 
 **设置主题**
-`~/.config/Starship.toml`
 
-```toml
-# 根据 schema 提供自动补全
-"$schema" = 'https://Starship.rs/config-schema.json'
+配置文件在 `%USERPROFILE%\.config\Starship.toml`
 
-# 在提示符之间插入空行
-add_newline = true
+[我的Starship.toml](https://gist.githubusercontent.com/Huffer342-WSH/96daad59d245e1023dd94bebb5da364f/raw/Starship.toml)
 
-format = """
-$directory\
-$git_branch\
-$git_status\
-$python\
-\n$character\
-"""
-
-[directory]
-truncation_length = 8
-truncate_to_repo = false
-truncation_symbol = '…/'
-use_os_path_sep = false
-
-[python]
-symbol = ' '
-pyenv_version_name = false
-```
+<CodeBlockFromUrl url="https://gist.githubusercontent.com/Huffer342-WSH/96daad59d245e1023dd94bebb5da364f/raw/Starship.toml" title="%USERPROFILE%\.config\Starship.toml" />
 
 ### 3.2 安装 Nerd 字体
 
@@ -225,9 +199,12 @@ VSCode的话再设置里搜索terminal.integrated.fontFamily
 
 填上安装的字体就可以
 
-`<a id="conda"></a>`
 
-## 4. conda延迟加载
+
+## 4. ~~conda延迟加载~~
+
+> windows下conda初始化速度很慢，推荐直接安装miniforge并使用里面的mamba
+> 使用`mamba shell init --shell powershell`向powershell初始化脚本添加内容
 
 `conda init`会添加初始化指令到 `~\Documents\PowerShell\profile.ps1`，封装里面的初始化指令
 

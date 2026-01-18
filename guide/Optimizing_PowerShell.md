@@ -21,13 +21,19 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
 
 ## 0. 精简版
 
-1. 安装 `PSReadLine`,`posh-git`,`Starship`
+1. 安装 `PSReadLine`,`posh-git`,`Starship`以及自动补全插件
 
-   ```PowerShell
-   Install-Module PSReadLine -Force -SkipPublisherCheck
-   Install-Module posh-git -Scope CurrentUser -Force
-   winget install --id Starship.Starship
-   ```
+  ```PowerShell
+  Install-Module PSReadLine -Force -SkipPublisherCheck
+  Install-Module posh-git -Scope CurrentUser -Force
+  # 安装智能预测插件
+  Install-Module -Name Az.Accounts -Force
+  Install-Module -Name Az.Tools.Predictor -Force
+  Install-Module -Name CompletionPredictor -Repository PSGallery -Force
+
+  winget install --id Starship.Starship
+  ```
+
 2. 打开PowerShell配置文件
 
    ```PowerShell
@@ -157,6 +163,46 @@ Install-Module posh-git -Scope CurrentUser -Force
 ```PowerShell
 Import-Module posh-git
 ```
+
+### 2.3 安装 IntelliSense 智能补全插件
+
+PSReadLine 2.1+ 支持插件式的预测器（Predictors），可以结合 Azure 插件和通用的补全插件，让补全提示不仅仅局限于历史记录，还能提供命令参数的智能建议。
+
+**安装插件**
+
+我们需要安装 Azure 相关模块（`Az.Tools.Predictor`）以及通用的补全预测器（`CompletionPredictor`）：
+
+```PowerShell
+# 安装依赖
+Install-Module -Name Az.Accounts -Force
+# 安装 Azure 预测插件
+Install-Module -Name Az.Tools.Predictor -Force
+# 安装通用补全插件
+Install-Module -Name CompletionPredictor -Repository PSGallery -Force
+```
+
+**配置**
+
+打开 `$PROFILE` 配置文件，在 `Import-Module PSReadLine` 之后添加以下内容：
+
+```PowerShell
+# 加载预测插件
+Import-Module Az.Tools.Predictor
+Import-Module CompletionPredictor
+
+# 设置预测源：同时使用历史记录和插件提供的建议
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+```
+
+`PSReadLine`的补全提示有两种方式，按`F2`切换：
+- （默认）行内内联显示，`→`补全
+- 列表显示，按`↑↓`选择，`Tab`补全
+
+在`$PROFILE`中添加以下内容将`列表显示`设置为默认：
+```
+Set-PSReadLineOption -PredictionViewStyle ListView
+```
+
 
 ## 3. 安装Starship美化PowerShell
 

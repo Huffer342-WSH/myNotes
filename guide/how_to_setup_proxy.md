@@ -1,13 +1,12 @@
 ---
 layout: post
-title: 如何给各种软件设置代理
+title: 如何给各种软件设置代理和换源
 date: 2025-09-22 10:53:13
 categories: [教程]
 excerpt:
 hide: false
 ---
-
-以下均用`127.0.0.1:7890`代替代理的地址
+以下均用 `127.0.0.1:7890`代替代理的地址
 
 ## git
 
@@ -18,18 +17,27 @@ git config --global https.proxy http://127.0.0.1:7890
 
 ## npm、pnpm
 
+### 换源
+
+```sh
+pnpm config set registry https://registry.npmmirror.com
+```
+
+### 代理
+
 ```sh
 npm config set proxy http://127.0.0.1:7890
 npm config set https-proxy http://127.0.0.1:7890
 ```
 
-## pip、conda
+## conda
 
 ### 换源
 
 可以选清华源、中科大源、浙大源等
 
 `.condarc`:
+
 ```yaml
 show_channel_urls: true
 auto_activate: false
@@ -48,12 +56,16 @@ custom_channels:
   nvidia: https://mirrors.zju.edu.cn/anaconda-r
 ```
 
+## pip
+
+### 换源
 
 ```sh
 pip config set global.index-url https://mirrors.zju.edu.cn/pypi/web/simple
 ```
 
-`cuda版pytorch`
+**cuda版pytorch：**
+
 ```sh
 pip3 install torch torchvision -f https://mirrors.aliyun.com/pytorch-wheels/cu130
 ```

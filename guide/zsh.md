@@ -9,7 +9,7 @@ hide: false
 
 ## 一键[安装脚本](https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/install-zsh.sh)
 ```sh
-sh -c "$(wget -qO- https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/install-zsh.sh)"
+curl -L https://gist.githubusercontent.com/Huffer342-WSH/3d42fcb5ebbedcf2d47fe3dfea033739/raw/install-zsh.sh | bash
 ```
 
 ## 安装

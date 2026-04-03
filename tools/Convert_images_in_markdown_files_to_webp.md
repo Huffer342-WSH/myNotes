@@ -2,6 +2,7 @@
 layout: post
 title: 将markdown文件中的图片转化为webp
 date: 2024-06-01 16:40:00
+categories: [工具]
 excerpt: 写了一个python脚本用来压缩并替换markdown文件中引用的图片。
 ---
 

@@ -48,7 +48,7 @@ sudo usermod -aG kvm $USER
 virt-manager
 ```
 
-![Virtual Machine Manager](image-1.png)
+![Virtual Machine Manager](./image-1.png)
 
 ---
 
@@ -109,7 +109,7 @@ virt-manager
 # 七、安装 Windows
 
 
-![新建虚拟机](image.png)
+![新建虚拟机](./image.png)
 
 ![选择镜像](./.assets/install_windows_in_kvm/1774081805512.png)
 
